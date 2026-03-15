@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HACHA 🪓 | V7.0 ULTIMATE</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    :root { --bg: #0f172a; --surface: #1e293b; --primary: #f97316; --primary-dark: #ea580c; --success: #22c55e; --danger: #ef4444; --text: #f8fafc; --violet: #8b5cf6; }
+    * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
+    
+    .screen { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 20px; text-align: center; width: 100%; height: 100vh; position: absolute; top:0; left:0; background: var(--bg); }
+    .active { display: flex; z-index: 10; }
+    
+    .card { background: var(--surface); padding: 2rem; border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); max-width: 850px; width: 95%; border: 1px solid rgba(255,255,255,0.1); position: relative; max-height: 90vh; overflow-y: auto; }
+    
+    h1 { font-size: 3.5rem; margin: 0 0 1rem 0; letter-spacing: -2px; text-transform: uppercase; font-weight: 900; }
+    .btn { background: var(--primary); color: white; border: none; padding: 18px 32px; font-size: 1.2rem; font-weight: 800; border-radius: 14px; cursor: pointer; margin: 10px; transition: 0.2s; box-shadow: 0 5px 0 var(--primary-dark); text-transform: uppercase; width: 100%; max-width: 320px; }
+    .btn:active { transform: translateY(4px); box-shadow: none; }
+    .btn:disabled { background: #475569; box-shadow: none; opacity: 0.6; cursor: not-allowed; }
+    .btn.green { background: var(--success); box-shadow: 0 5px 0 #15803d; }
+    .btn.red { background: var(--danger); box-shadow: 0 5px 0 #b91c1c; }
+    .btn.reveal { background: var(--violet); box-shadow: 0 5px 0 #6d28d9; }
+
+    .cat-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; background: rgba(255,255,255,0.1); font-size: 0.9rem; font-weight: 900; color: var(--primary); margin-bottom: 10px; border: 1px solid var(--primary); }
+    .question-text { font-size: 2.2rem; line-height: 1.3; margin: 20px 0; font-weight: 800; color: #fff; }
+    .answer-text { font-size: 1.8rem; color: #facc15; font-weight: 800; margin: 20px 0; padding: 15px; background: rgba(250, 204, 21, 0.1); border-radius: 12px; border: 2px dashed #facc15; }
+    .blur-mode { filter: blur(12px); opacity: 0.3; }
+
+    /* R3 Vidas */
+    .lives-container { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+    .player-life-card { background: #0f172a; padding: 15px; border-radius: 15px; min-width: 140px; border: 2px solid #334155; }
+    .player-life-card.active-turn { border-color: var(--primary); transform: scale(1.1); box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+    .player-life-card.eliminated { opacity: 0.3; filter: grayscale(1); }
+
+    /* Buzzer */
+    .buzzer-btn { width: 280px; height: 280px; border-radius: 50%; background: var(--danger); border: 10px solid #991b1b; color: white; font-size: 3rem; font-weight: 900; box-shadow: 0 20px 0 #7f1d1d; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    .buzzer-btn.disabled { background: #334155 !important; border-color: #1e293b !important; color: #64748b; pointer-events: none; transform: translateY(15px); }
+
+    #countdown-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+</style>
+</head>
+<body>
+
+<div id="countdown-layer"><div id="cd-num" style="font-size: 15rem; font-weight: 900; color: white;">3</div></div>
+
+<div id="live-scoreboard" style="position:fixed; top:20px; right:20px; background:rgba(15,23,42,0.8); padding:20px; border-radius:16px; z-index:100; min-width:180px; display:none; border:1px solid rgba(255,255,255,0.1);">
+    <div style="font-size:0.8rem; opacity:0.7; font-weight:bold; margin-bottom:10px;">GLOBAL SCORE</div>
+    <div id="score-list"></div>
+</div>
+
+<div id="screen-home" class="screen active">
+    <h1>HACHA 🪓</h1>
+    <p id="load-status">Cargando 300 preguntas...</p>
+    <button id="btn-host-start" class="btn" onclick="app.hostGame()" disabled>Crear Partida (Host)</button>
+</div>
+
+<div id="screen-lobby" class="screen">
+    <div class="card">
+        <h2>SALA DE ESPERA</h2>
+        <h1 id="display-code" style="font-family: monospace; letter-spacing: 12px; color:var(--primary); font-size: 5rem;">----</h1>
+        <div id="qrcode" style="display: flex; justify-content: center; margin: 30px 0; background: white; padding: 15px; border-radius: 16px;"></div>
+        <div id="players-list" style="margin: 20px 0; font-size: 1.4rem; font-weight: bold;"></div>
+        <button class="btn green" onclick="app.startRound1()">EMPEZAR RONDA 1</button>
+    </div>
+</div>
+
+<div id="screen-r1-game" class="screen">
+    <div class="card">
+        <div id="q-counter" style="font-weight: 800; opacity: 0.5;">PREGUNTA 1/10</div>
+        <div id="q-cat" class="cat-badge">CATEGORÍA</div>
+        <div id="q-text" class="question-text">...</div>
+        <div id="q-answer" class="answer-text blur-mode">...</div>
+        <div id="r1-controls-reading">
+            <button class="btn reveal" onclick="app.toggleAnswer()">👁️ VER RESPUESTA</button>
+            <button class="btn" style="background:#3b82f6" onclick="app.startCountdown()">⏱️ CUENTA ATRÁS</button>
+        </div>
+        <div id="r1-controls-judging" style="display:none;">
+            <div id="answering-name" style="font-size:3rem; font-weight:900; color:var(--primary); margin-bottom:20px;">...</div>
+            <button class="btn reveal" id="btn-reveal-judge" onclick="app.confirmReveal()">👁️ DESVELAR RESPUESTA</button>
+            <div id="judge-buttons" style="display:none; gap:15px; justify-content:center;">
+                <button class="btn green" onclick="app.judge(true)">✅ CORRECTO</button>
+                <button class="btn red" onclick="app.judge(false)">❌ FALLO</button>
+            </div>
+        </div>
+        <div id="r1-controls-next" style="display:none;">
+            <button class="btn" onclick="app.nextQuestion()">➡ SIGUIENTE</button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-ranking" class="screen">
+    <div class="card">
+        <h1>CLASIFICACIÓN</h1>
+        <div id="ranking-list" style="margin: 30px 0; width:100%;"></div>
+        <button id="rank-next-btn" class="btn" onclick="app.nextPhaseFromRanking()">SIGUIENTE RONDA ➡</button>
+    </div>
+</div>
+
+<div id="screen-r3-game" class="screen">
+    <div class="card">
+        <h2 style="color:var(--success)">RONDA 3: SUPERVIVENCIA 💀</h2>
+        <div id="r3-q-cat" class="cat-badge">CATEGORÍA</div>
+        <div id="r3-q-text" class="question-text" style="font-size: 1.8rem;">...</div>
+        <div id="r3-q-answer" class="answer-text blur-mode">...</div>
+        <div id="r3-lives-display" class="lives-container"></div>
+        <div id="r3-controls-reading" style="margin-top:20px;">
+            <button class="btn reveal" onclick="app.toggleAnswerR3()">👁️ VER RESPUESTA</button>
+            <button class="btn green" onclick="app.confirmRevealR3()">🔓 ABRIR TURNO</button>
+        </div>
+        <div id="r3-controls-judging" style="display:none; margin-top:20px;">
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button class="btn green" onclick="app.judgeR3(true)">✅ ACERTÓ</button>
+                <button class="btn red" onclick="app.judgeR3(false)">❌ FALLÓ (-1 VIDA)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="screen-join" class="screen">
+    <div class="card" style="background:transparent; border:none; box-shadow:none;">
+        <h1 style="margin-bottom: 40px;">HACHA 🪓</h1>
+        <input type="text" id="join-code" style="background:#020617; border:2px solid #334155; color:white; padding:20px; font-size:1.6rem; text-align:center; border-radius:16px; width:100%; margin-bottom:15px; text-transform:uppercase;" placeholder="CÓDIGO SALA" maxlength="4">
+        <input type="text" id="join-name" style="background:#020617; border:2px solid #334155; color:white; padding:20px; font-size:1.6rem; text-align:center; border-radius:16px; width:100%; margin-bottom:15px; text-transform:uppercase;" placeholder="TU NOMBRE" maxlength="12">
+        <button id="btn-join" class="btn" onclick="app.joinGame()">¡ENTRAR!</button>
+    </div>
+</div>
+
+<div id="screen-controller" class="screen" style="background:black;">
+    <div id="my-score" style="position:absolute; top:25px; right:25px; color:#facc15; font-weight:900; font-size:1.5rem;">0 PTS</div>
+    <div id="r3-lives-mobile" style="position:absolute; top:25px; left:25px; color:var(--danger); font-weight:900; display:none;"></div>
+    <div id="ctrl-r1">
+        <div id="msg-box" style="margin-bottom:40px; font-size:2rem; color:white; font-weight:900;">ESPERANDO...</div>
+        <button id="buzzer" class="buzzer-btn disabled" ontouchstart="app.buzz()" onclick="app.buzz()">BUZZ</button>
+    </div>
+    <div id="ctrl-spectator" style="display:none;">
+        <h2 style="color:var(--danger)">ELIMINADO</h2>
+        <p>Modo espectador</p>
+    </div>
+</div>
+
+<script>
+class HachaEngine {
+    constructor() {
+        this.peer = null; this.conn = null; this.connections = {}; this.players = {};
+        this.roomCode = ""; this.phase = 0; this.currentQIndex = 0;
+        this.buzzerLocked = true; this.currentAnswererId = null;
+        this.questionsDB = []; this.shuffledQuestions = [];
+        this.r3Order = []; this.r3TurnIdx = 0;
+        this.init();
+    }
+
+    async init() {
+        try {
+            const response = await fetch('preguntas.json');
+            this.questionsDB = await response.json();
+            document.getElementById('load-status').innerText = "✅ 300 Preguntas Listas.";
+            document.getElementById('btn-host-start').disabled = false;
+        } catch (e) {
+            document.getElementById('load-status').innerText = "❌ Error cargando preguntas.json";
+        }
+    }
+
+    show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('live-scoreboard').style.display = (id.includes('game') && id !== 'screen-r3-game') ? 'block' : 'none';
+    }
+
+    hostGame() {
+        this.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        this.peer = new Peer(`hacha-room-${this.roomCode}`);
+        this.peer.on('open', () => {
+            const url = `${window.location.origin}${window.location.pathname}?code=${this.roomCode}`;
+            document.getElementById('display-code').innerText = this.roomCode;
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), { text: url, width: 180, height: 180 });
+            this.show('screen-lobby');
+        });
+        this.peer.on('connection', c => {
+            c.on('data', d => this.handleHostData(c, d));
+            c.on('close', () => { delete this.players[c.peer]; this.updateScoreboard(); });
+            this.connections[c.peer] = c;
+        });
+    }
+
+    handleHostData(c, d) {
+        if (d.type === 'join') { 
+            this.players[c.peer] = { name: d.name, score: 0, id: c.peer, lives: 3, eliminated: false }; 
+            this.updateScoreboard();
+            document.getElementById('players-list').innerHTML = Object.values(this.players).map(p => `<span>👤 ${p.name}</span>`).join('  ');
+        }
+        if (d.type === 'buzz') this.handleBuzz(c.peer);
+    }
+
+    // --- R1 ---
+    startRound1() { 
+        this.phase = 1; 
+        // Filtrar dificultad 1 y 2 para la primera ronda
+        this.shuffledQuestions = this.questionsDB.filter(q => q.dif <= 2).sort(() => Math.random() - 0.5);
+        this.currentQIndex = -1; 
+        this.broadcast({ type: 'phase', phase: 1 }); 
+        this.nextQuestion(); 
+    }
+    
+    nextQuestion() {
+        this.currentQIndex++; 
+        if (this.currentQIndex >= 10) { this.showRanking(); return; }
+        const q = this.shuffledQuestions[this.currentQIndex]; 
+        this.show('screen-r1-game');
+        document.getElementById('q-counter').innerText = `PREGUNTA ${this.currentQIndex+1}/10`;
+        document.getElementById('q-cat').innerText = q.cat;
+        document.getElementById('q-text').innerText = q.q; 
+        document.getElementById('q-answer').innerText = q.a;
+        document.getElementById('q-answer').classList.add('blur-mode');
+        document.getElementById('r1-controls-reading').style.display = 'block';
+        document.getElementById('r1-controls-judging').style.display = 'none';
+        document.getElementById('r1-controls-next').style.display = 'none';
+        this.buzzerLocked = true; 
+        this.broadcast({ type: 'status', msg: 'ESCUCHA...', locked: true });
+    }
+
+    startCountdown() {
+        document.getElementById('r1-controls-reading').style.display = 'none';
+        let count = 3; this.showOverlay(count); this.broadcast({ type: 'countdown', val: count });
+        const t = setInterval(() => {
+            count--; if(count > 0) { this.showOverlay(count); this.broadcast({ type: 'countdown', val: count }); }
+            else { clearInterval(t); this.showOverlay("YA!"); this.broadcast({ type: 'countdown', val: "YA!" }); setTimeout(() => { this.hideOverlay(); this.unlockBuzzers(); }, 800); }
+        }, 1000);
+    }
+
+    unlockBuzzers() { this.buzzerLocked = false; this.broadcast({ type: 'status', msg: '¡PULSA!', color: 'red', locked: false }); }
+
+    handleBuzz(id) {
+        if (this.buzzerLocked) return;
+        this.buzzerLocked = true; this.currentAnswererId = id;
+        if(this.phase === 3) {
+            document.getElementById('r3-controls-reading').style.display = 'none';
+            document.getElementById('r3-controls-judging').style.display = 'block';
+        } else {
+            document.getElementById('r1-controls-judging').style.display = 'block';
+            document.getElementById('answering-name').innerText = this.players[id].name;
+            document.getElementById('btn-reveal-judge').style.display = 'block';
+            document.getElementById('judge-buttons').style.display = 'none';
+        }
+        this.broadcastBuzz(id);
+    }
+
+    broadcastBuzz(id) {
+        Object.values(this.connections).forEach(c => {
+            if(c.peer === id) c.send({ type: 'status', msg: 'TU TURNO', color: 'orange', locked: true });
+            else c.send({ type: 'status', msg: `${this.players[id].name} RESPONDE`, color: 'grey', locked: true });
+        });
+    }
+
+    confirmReveal() {
+        document.getElementById('q-answer').classList.remove('blur-mode');
+        document.getElementById('btn-reveal-judge').style.display = 'none';
+        document.getElementById('judge-buttons').style.display = 'flex';
+    }
+
+    judge(ok) {
+        const p = this.players[this.currentAnswererId];
+        if (ok) { p.score++; confetti({ origin: { y: 0.8 } }); this.finishQ(); }
+        else { p.score--; this.rebound(); }
+        this.updateScoreboard();
+    }
+
+    rebound() {
+        const ops = Object.keys(this.players).filter(i => i !== this.currentAnswererId);
+        if (ops.length > 0) {
+            const luck = ops[Math.floor(Math.random() * ops.length)];
+            this.currentAnswererId = luck; document.getElementById('answering-name').innerText = this.players[luck].name;
+            document.getElementById('q-answer').classList.add('blur-mode');
+            document.getElementById('btn-reveal-judge').style.display = 'block';
+            document.getElementById('judge-buttons').style.display = 'none';
+            this.connections[luck].send({ type: 'status', msg: '¡REBOTE!', color: 'orange', locked: false });
+        } else this.finishQ();
+    }
+
+    finishQ() { 
+        document.getElementById('q-answer').classList.remove('blur-mode');
+        document.getElementById('r1-controls-judging').style.display = 'none'; 
+        document.getElementById('r1-controls-next').style.display = 'block'; 
+    }
+
+    toggleAnswer() { document.getElementById('q-answer').classList.toggle('blur-mode'); }
+
+    showRanking() {
+        this.show('screen-ranking');
+        const sorted = Object.values(this.players).sort((a,b) => b.score - a.score);
+        document.getElementById('ranking-list').innerHTML = sorted.map((p, i) => `<div style="background:#334155; padding:15px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; font-weight:bold; font-size:1.4rem;"><span>${i+1}. ${p.name}</span><span>${p.score} PTS</span></div>`).join('');
+    }
+
+    nextPhaseFromRanking() {
+        if (this.phase === 1) this.startRound3();
+    }
+
+    // --- R3 ---
+    startRound3() {
+        this.phase = 3;
+        const sorted = Object.values(this.players).sort((a,b) => b.score - a.score);
+        const n = sorted.length;
+        sorted.forEach((p, i) => { p.lives = Math.max(1, Math.min(5, n - i)); p.eliminated = false; });
+        this.r3Order = sorted.map(p => p.id); this.r3TurnIdx = 0;
+        this.broadcast({ type: 'phase', phase: 3 });
+        this.nextR3Question();
+    }
+
+    nextR3Question() {
+        const vivos = Object.values(this.players).filter(p => !p.eliminated);
+        if (vivos.length <= 2) { alert("¡FINALISTAS ENCONTRADOS!"); return; }
+        while(this.players[this.r3Order[this.r3TurnIdx]].eliminated) { this.r3TurnIdx = (this.r3TurnIdx + 1) % this.r3Order.length; }
+        
+        const activeId = this.r3Order[this.r3TurnIdx];
+        this.currentAnswererId = activeId;
+        // Solo dificultad 2 y 3 para Supervivencia
+        const pool = this.questionsDB.filter(q => q.dif >= 2);
+        const q = pool[Math.floor(Math.random() * pool.length)];
+
+        this.show('screen-r3-game');
+        document.getElementById('r3-q-cat').innerText = q.cat;
+        document.getElementById('r3-q-text').innerText = `Turno de: ${this.players[activeId].name}\n\n${q.q}`;
+        document.getElementById('r3-q-answer').innerText = q.a;
+        document.getElementById('r3-q-answer').classList.add('blur-mode');
+        document.getElementById('r3-controls-reading').style.display = 'block';
+        document.getElementById('r3-controls-judging').style.display = 'none';
+        this.updateR3LivesUI(); this.broadcastTurnR3(activeId);
+    }
+
+    broadcastTurnR3(activeId) {
+        Object.values(this.connections).forEach(c => {
+            const p = this.players[c.peer];
+            c.send({ type: 'r3-update', myTurn: c.peer === activeId, lives: p.lives, eliminated: p.eliminated, msg: c.peer === activeId ? "¡TU TURNO!" : `Turno de ${this.players[activeId].name}` });
+        });
+    }
+
+    toggleAnswerR3() { document.getElementById('r3-q-answer').classList.toggle('blur-mode'); }
+    confirmRevealR3() { this.buzzerLocked = false; document.getElementById('r3-controls-reading').style.display = 'none'; this.connections[this.currentAnswererId].send({ type: 'status', msg: '¡PULSA YA!', color: 'red', locked: false }); }
+    
+    judgeR3(ok) {
+        const p = this.players[this.currentAnswererId];
+        if (!ok) { p.lives--; if (p.lives <= 0) p.eliminated = true; }
+        else { confetti({ origin: { y: 0.8 }, colors: ['#22c55e'] }); }
+        this.r3TurnIdx = (this.r3TurnIdx + 1) % this.r3Order.length;
+        this.updateR3LivesUI(); setTimeout(() => this.nextR3Question(), 1500);
+    }
+
+    updateR3LivesUI() {
+        document.getElementById('r3-lives-display').innerHTML = this.r3Order.map(id => {
+            const p = this.players[id];
+            return `<div class="player-life-card ${id === this.currentAnswererId ? 'active-turn' : ''} ${p.eliminated ? 'eliminated' : ''}"><b>${p.name}</b><div>${'❤️'.repeat(p.lives)}</div></div>`;
+        }).join('');
+    }
+
+    updateScoreboard() {
+        const sorted = Object.values(this.players).sort((a,b)=>b.score-a.score);
+        document.getElementById('score-list').innerHTML = sorted.map(p => `<div style="display:flex; justify-content:space-between; margin-bottom:5px; font-weight:bold;"><span>${p.name}</span><span>${p.score}</span></div>`).join('');
+        Object.values(this.connections).forEach(c => c.send({ type: 'scoreUpdate', score: this.players[c.peer]?.score || 0 }));
+    }
+
+    joinGame() {
+        const c = document.getElementById('join-code').value.toUpperCase().trim();
+        const n = document.getElementById('join-name').value.toUpperCase().trim();
+        if(!c || !n) return;
+        if(this.peer) this.peer.destroy(); this.peer = new Peer();
+        this.peer.on('open', () => {
+            const conn = this.peer.connect(`hacha-room-${c}`, { reliable: true });
+            conn.on('open', () => { this.conn = conn; conn.send({type:'join', name:n}); this.show('screen-controller'); });
+            conn.on('data', d => this.handleClientData(d));
+        });
+    }
+
+    handleClientData(d) {
+        if(d.type==='phase'){ if(d.phase === 3) document.getElementById('r3-lives-mobile').style.display = 'block'; }
+        if(d.type==='r3-update'){
+            document.getElementById('r3-lives-mobile').innerText = '❤️'.repeat(d.lives);
+            document.getElementById('msg-box').innerText = d.msg;
+            if(d.eliminated) { document.getElementById('ctrl-r1').style.display = 'none'; document.getElementById('ctrl-spectator').style.display = 'block'; }
+            if(!d.myTurn) document.getElementById('buzzer').classList.add('disabled');
+        }
+        if(d.type==='status'){ 
+            const b = document.getElementById('buzzer'); document.getElementById('msg-box').innerText = d.msg;
+            if(d.locked) b.classList.add('disabled'); else b.classList.remove('disabled');
+            b.style.background = (d.color === 'orange') ? '#f97316' : '#ef4444';
+        }
+        if(d.type==='countdown'){ document.getElementById('countdown-layer').style.display = 'flex'; document.getElementById('cd-num').innerText = d.val; if(d.val==="YA!") setTimeout(()=> document.getElementById('countdown-layer').style.display = 'none', 800); }
+        if(d.type==='scoreUpdate') document.getElementById('my-score').innerText = d.score + " PTS";
+    }
+
+    buzz() { if(this.conn) this.conn.send({type:'buzz'}); }
+    showOverlay(v) { document.getElementById('countdown-layer').style.display = 'flex'; document.getElementById('cd-num').innerText = v; }
+    hideOverlay() { document.getElementById('countdown-layer').style.display = 'none'; }
+    broadcast(m) { Object.values(this.connections).forEach(c => c.send(m)); }
+}
+
+const app = new HachaEngine();
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("code")) { app.show('screen-join'); document.getElementById('join-code').value = urlParams.get("code"); }
+</script>
+</body>
+</html>
