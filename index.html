@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HACHA 🪓 | V5.0 UNIVERSAL</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    /* Estilos base (Mantengo tu línea estética profesional) */
+    :root { --bg: #0f172a; --surface: #1e293b; --primary: #f97316; --primary-dark: #ea580c; --success: #22c55e; --danger: #ef4444; --text: #f8fafc; }
+    * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
+    
+    .screen { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 20px; text-align: center; width: 100%; height: 100vh; position: absolute; top:0; left:0; background: var(--bg); }
+    .active { display: flex; z-index: 10; }
+    
+    .card { background: var(--surface); padding: 2rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-width: 850px; width: 95%; border: 1px solid rgba(255,255,255,0.1); position: relative; max-height: 90vh; overflow-y: auto; }
+    
+    .btn { background: var(--primary); color: white; border: none; padding: 16px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 12px; cursor: pointer; margin: 10px; transition: 0.2s; box-shadow: 0 4px 0 var(--primary-dark); width: 100%; max-width: 320px; }
+    .btn:active { transform: translateY(4px); box-shadow: none; }
+    .btn:disabled { background: #475569; box-shadow: none; opacity: 0.6; cursor: not-allowed; }
+    .btn.green { background: var(--success); box-shadow: 0 4px 0 #15803d; }
+    .btn.red { background: var(--danger); box-shadow: 0 4px 0 #b91c1c; }
+
+    .game-input { background: #020617; border: 2px solid #334155; color: white; padding: 18px; font-size: 1.5rem; text-align: center; border-radius: 12px; width: 100%; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; outline: none; }
+
+    /* R2 y Buzzer */
+    .tiles-container { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+    .tile { width: 65px; height: 75px; background: #3b82f6; color: white; font-size: 2.2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 8px; border-bottom: 5px solid #1d4ed8; }
+    .tile.letter { background: #eab308; border-bottom: 5px solid #a16207; }
+    .timer-big { font-size: 7rem; font-weight: 900; color: var(--danger); margin: 10px 0; font-variant-numeric: tabular-nums; }
+    
+    .buzzer-btn { width: 250px; height: 250px; border-radius: 50%; background: var(--danger); border: 8px solid #991b1b; color: white; font-size: 2.5rem; font-weight: 900; box-shadow: 0 15px 0 #7f1d1d; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    .buzzer-btn.disabled { background: #334155 !important; border-color: #1e293b !important; box-shadow: none !important; color: #64748b; pointer-events: none; transform: translateY(10px); }
+
+    #countdown-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+    .countdown-number { font-size: 12rem; font-weight: 900; color: white; }
+    
+    .scoreboard-fixed { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 10px; z-index: 100; min-width: 160px; text-align: left; }
+</style>
+</head>
+<body>
+
+<div id="countdown-layer"><div id="cd-num" class="countdown-number">3</div></div>
+
+<div id="live-scoreboard" class="scoreboard-fixed" style="display:none;">
+    <div style="font-size:0.8rem; opacity:0.7; margin-bottom:10px;">PUNTUACIÓN</div>
+    <div id="score-list"></div>
+</div>
+
+<div id="screen-home" class="screen active">
+    <h1>HACHA 🪓</h1>
+    <p id="net-status" style="opacity:0.6">Detectando red...</p>
+    <button class="btn" onclick="app.hostGame()">Crear Partida (Host)</button>
+</div>
+
+<div id="screen-lobby" class="screen">
+    <div class="card">
+        <h2>SALA DE ESPERA</h2>
+        <h1 id="display-code" style="font-family: monospace; letter-spacing: 10px; color:var(--primary);">----</h1>
+        <div id="qrcode" style="display: flex; justify-content: center; margin: 20px 0; background: white; padding: 10px; border-radius: 10px;"></div>
+        <div id="players-list" style="margin: 20px 0; font-size: 1.2rem;">Esperando jugadores...</div>
+        <button class="btn green" onclick="app.startRound1()">EMPEZAR RONDA 1</button>
+    </div>
+</div>
+
+<div id="screen-r1-game" class="screen">
+    <div class="card">
+        <div id="q-counter" style="opacity:0.5; margin-bottom:10px;">PREGUNTA 1/10</div>
+        <div id="q-text" style="font-size:2rem; font-weight:bold; margin: 20px 0;">...</div>
+        <div id="q-answer" style="color:#facc15; font-size:1.5rem; font-weight:bold; filter: blur(12px);">...</div>
+        <div id="r1-controls-reading" style="margin-top:30px;">
+            <button class="btn grey" onclick="app.toggleAnswer()">👁️ VER RESPUESTA</button>
+            <button class="btn" style="background:#3b82f6" onclick="app.startCountdown()">⏱️ CUENTA ATRÁS</button>
+        </div>
+        <div id="r1-controls-judging" style="display:none; margin-top:20px;">
+            <div id="answering-name" style="font-size:2.5rem; font-weight:900; color:var(--primary); margin-bottom:20px;">...</div>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button class="btn green" onclick="app.judge(true)">✅ CORRECTO</button>
+                <button class="btn red" onclick="app.judge(false)">❌ FALLO</button>
+            </div>
+        </div>
+        <div id="r1-controls-next" style="display:none; margin-top:20px;">
+            <button class="btn" onclick="app.nextQuestion()">➡ SIGUIENTE PREGUNTA</button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-ranking" class="screen">
+    <div class="card">
+        <h1>CLASIFICACIÓN</h1>
+        <div id="ranking-list" style="margin: 20px 0; width:100%;"></div>
+        <button id="rank-next-btn" class="btn" onclick="app.startRound2Intro()">IR A RONDA 2 ➡</button>
+    </div>
+</div>
+
+<div id="screen-r2-game" class="screen">
+    <div class="card">
+        <h2 id="r2-title">CÁLCULO</h2>
+        <div id="math-target" style="font-size:6rem; font-weight:900; display:none;">000</div>
+        <div id="tiles-container" class="tiles-container"></div>
+        <div id="r2-timer" class="timer-big">45</div>
+        <div id="r2-controls-start">
+            <button class="btn" onclick="app.startR2Timer()">▶ INICIAR TIEMPO</button>
+        </div>
+        <div id="r2-controls-score" style="display:none;">
+            <p>¿Quién ha ganado?</p>
+            <div id="r2-winner-btns" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;"></div>
+            <button class="btn grey" onclick="app.nextSubRound()">NADIE</button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-join" class="screen">
+    <div class="card" style="background:transparent; border:none; box-shadow:none;">
+        <input type="text" id="join-code" class="game-input" placeholder="CÓDIGO SALA" maxlength="4">
+        <input type="text" id="join-name" class="game-input" placeholder="TU NOMBRE" maxlength="12">
+        <button id="btn-join" class="btn" onclick="app.joinGame()">¡ENTRAR AL JUEGO!</button>
+    </div>
+</div>
+
+<div id="screen-controller" class="screen" style="background:black;">
+    <div id="my-score" style="position:absolute; top:20px; right:20px; color:#facc15; font-weight:bold;">0 PTS</div>
+    <div id="ctrl-r1">
+        <div id="msg-box" style="margin-bottom:30px; font-size:1.6rem; color:white; font-weight:bold;">ESPERANDO...</div>
+        <button id="buzzer" class="buzzer-btn disabled" ontouchstart="app.buzz()" onclick="app.buzz()">BUZZ</button>
+    </div>
+    <div id="ctrl-r2" style="display:none;">
+        <div id="r2-mobile-data" style="font-size:1.8rem; color:white; font-weight:bold; margin-bottom:20px;">...</div>
+        <div id="r2-mobile-timer" style="font-size:5rem; font-weight:bold; color:red;">45</div>
+    </div>
+</div>
+
+<script>
+class HachaEngine {
+    constructor() {
+        this.peer = null;
+        this.conn = null;
+        this.connections = {};
+        this.players = {};
+        this.roomCode = "";
+        this.phase = 0;
+        this.currentQIndex = 0;
+        this.buzzerLocked = true;
+        this.subRound = 0;
+        this.r2Timer = 45;
+
+        // Auto-detección de URL para el QR
+        this.baseURL = window.location.origin + window.location.pathname;
+        document.getElementById('net-status').innerText = "Listo en: " + window.location.hostname;
+    }
+
+    show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('live-scoreboard').style.display = id.includes('game') ? 'block' : 'none';
+    }
+
+    hostGame() {
+        // Generamos un código corto y lo usamos como ID de PeerJS
+        this.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        
+        // PeerJS se encarga de la conexión a través de sus servidores, 
+        // saltándose los problemas de IP y Firewall locales.
+        this.peer = new Peer(`hacha-room-${this.roomCode}`);
+        
+        this.peer.on('open', (id) => {
+            const joinURL = `${this.baseURL}?code=${this.roomCode}`;
+            document.getElementById('display-code').innerText = this.roomCode;
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), { text: joinURL, width: 200, height: 200 });
+            this.show('screen-lobby');
+        });
+
+        this.peer.on('connection', c => {
+            c.on('data', d => this.handleHostData(c, d));
+            c.on('close', () => { delete this.players[c.peer]; this.updateScoreboard(); });
+            this.connections[c.peer] = c;
+        });
+
+        this.peer.on('error', (err) => {
+            if(err.type === 'unavailable-id') alert("Error: Intenta crear la partida de nuevo.");
+            console.error(err);
+        });
+    }
+
+    handleHostData(c, d) {
+        if (d.type === 'join') { 
+            this.players[c.peer] = { name: d.name, score: 0, id: c.peer }; 
+            this.updateScoreboard();
+            this.updateLobbyList();
+        }
+        if (d.type === 'buzz') this.handleBuzz(c.peer);
+    }
+
+    updateLobbyList() {
+        const list = Object.values(this.players).map(p => `<span>👤 ${p.name}</span>`).join('  ');
+        document.getElementById('players-list').innerHTML = list || "Esperando jugadores...";
+    }
+
+    // Lógica R1 y R2 resumida para estabilidad
+    startRound1() { 
+        this.phase = 1; this.currentQIndex = -1; 
+        this.broadcast({ type: 'phase', phase: 1 });
+        this.nextQuestion(); 
+    }
+
+    nextQuestion() {
+        this.currentQIndex++; 
+        if (this.currentQIndex >= DB_QUESTIONS.length) { this.showRanking(true); return; }
+        const q = DB_QUESTIONS[this.currentQIndex];
+        this.show('screen-r1-game');
+        document.getElementById('q-counter').innerText = `PREGUNTA ${this.currentQIndex+1}/10`;
+        document.getElementById('q-text').innerText = q.q;
+        document.getElementById('q-answer').innerText = q.a;
+        document.getElementById('q-answer').style.filter = "blur(12px)";
+        document.getElementById('r1-controls-reading').style.display = 'block';
+        document.getElementById('r1-controls-judging').style.display = 'none';
+        document.getElementById('r1-controls-next').style.display = 'none';
+        this.buzzerLocked = true;
+        this.broadcast({ type: 'status', msg: 'ESCUCHA...', locked: true });
+    }
+
+    startCountdown() {
+        document.getElementById('r1-controls-reading').style.display = 'none';
+        let count = 3; this.showOverlay(count); this.broadcast({ type: 'countdown', val: count });
+        const t = setInterval(() => {
+            count--; if(count > 0) { this.showOverlay(count); this.broadcast({ type: 'countdown', val: count }); }
+            else { clearInterval(t); this.showOverlay("YA!"); this.broadcast({ type: 'countdown', val: "YA!" }); setTimeout(() => { this.hideOverlay(); this.unlockBuzzers(); }, 800); }
+        }, 1000);
+    }
+
+    unlockBuzzers() { this.buzzerLocked = false; this.broadcast({ type: 'status', msg: '¡PULSA!', color: 'red', locked: false }); }
+
+    handleBuzz(id) {
+        if (this.phase !== 1 || this.buzzerLocked) return;
+        this.buzzerLocked = true; this.currentAnswererId = id;
+        document.getElementById('r1-controls-judging').style.display = 'block';
+        document.getElementById('answering-name').innerText = this.players[id].name;
+        Object.values(this.connections).forEach(c => {
+            if(c.peer === id) c.send({ type: 'status', msg: 'TU TURNO', color: 'orange', locked: true });
+            else c.send({ type: 'status', msg: `${this.players[id].name} RESPONDE`, color: 'grey', locked: true });
+        });
+    }
+
+    judge(ok) {
+        const p = this.players[this.currentAnswererId];
+        document.getElementById('q-answer').style.filter = "none";
+        if (ok) { p.score++; confetti({ origin: { y: 0.8 } }); this.finishQ(); }
+        else { p.score--; this.rebound(); }
+        this.updateScoreboard();
+    }
+
+    rebound() {
+        const ops = Object.keys(this.players).filter(i => i !== this.currentAnswererId);
+        if (ops.length > 0) {
+            const luck = ops[Math.floor(Math.random() * ops.length)];
+            this.currentAnswererId = luck; document.getElementById('answering-name').innerText = this.players[luck].name;
+            this.connections[luck].send({ type: 'status', msg: '¡REBOTE!', color: 'orange', locked: false });
+        } else this.finishQ();
+    }
+
+    finishQ() { document.getElementById('r1-controls-judging').style.display = 'none'; document.getElementById('r1-controls-next').style.display = 'block'; }
+    toggleAnswer() { 
+        const a = document.getElementById('q-answer');
+        a.style.filter = (a.style.filter === "none") ? "blur(12px)" : "none";
+    }
+
+    showRanking(isInter) {
+        this.show('screen-ranking');
+        const sorted = Object.values(this.players).sort((a,b) => b.score - a.score);
+        document.getElementById('ranking-list').innerHTML = sorted.map((p, i) => `<div class="rank-item"><span>${i+1}. ${p.name}</span><span>${p.score} PTS</span></div>`).join('');
+    }
+
+    startRound2Intro() { this.phase = 2; this.subRound = 0; this.broadcast({ type: 'phase', phase: 2 }); this.setupSubRound(); }
+    
+    setupSubRound() {
+        this.show('screen-r2-game');
+        document.getElementById('r2-controls-start').style.display = 'block';
+        document.getElementById('r2-controls-score').style.display = 'none';
+        const isM = (this.subRound % 2 === 0);
+        document.getElementById('r2-title').innerText = isM ? "CÁLCULO" : "LÉXICO";
+        this.r2Data = isM ? this.genMath() : this.genLex();
+        this.broadcast({ type: 'r2-data', text: this.r2Data });
+        this.broadcast({ type: 'r2-timer', val: 45 });
+    }
+
+    genMath() {
+        document.getElementById('math-target').style.display = 'block';
+        const target = Math.floor(Math.random() * 900) + 100;
+        document.getElementById('math-target').innerText = target;
+        let t = [1,2,3,4,5,6,7,8,9,10,25,50,75,100].sort(()=>.5-Math.random()).slice(0,6);
+        document.getElementById('tiles-container').innerHTML = t.map(x => `<div class="tile">${x}</div>`).join('');
+        return `OBJ: ${target} | ${t.join('-')}`;
+    }
+
+    genLex() {
+        document.getElementById('math-target').style.display = 'none';
+        let l = "AAAAEEEEIIOOUUBCDFGHJKLMNPRSTVXYZ".split('').sort(()=>.5-Math.random()).slice(0,9);
+        document.getElementById('tiles-container').innerHTML = l.map(x => `<div class="tile letter">${x}</div>`).join('');
+        return `LETRAS: ${l.join(' ')}`;
+    }
+
+    startR2Timer() {
+        document.getElementById('r2-controls-start').style.display = 'none'; this.r2Timer = 45;
+        this.r2Interval = setInterval(() => { 
+            this.r2Timer--; this.broadcast({ type: 'r2-timer', val: this.r2Timer }); 
+            document.getElementById('r2-timer').innerText = this.r2Timer; 
+            if(this.r2Timer<=0){ clearInterval(this.r2Interval); this.r2End(); } 
+        }, 1000);
+    }
+
+    r2End() {
+        document.getElementById('r2-controls-score').style.display = 'block';
+        document.getElementById('r2-winner-btns').innerHTML = Object.values(this.players).map(p => `<button class="btn green" style="width:auto" onclick="app.awardR2('${p.id}')">${p.name}</button>`).join('');
+    }
+
+    awardR2(id) { if(this.players[id]) this.players[id].score += 2; this.updateScoreboard(); this.subRound++; if(this.subRound>=4) this.showRanking(false); else this.setupSubRound(); }
+
+    updateScoreboard() {
+        const sorted = Object.values(this.players).sort((a,b)=>b.score-a.score);
+        document.getElementById('score-list').innerHTML = sorted.map(p => `<div class="score-row"><span>${p.name}</span><span>${p.score}</span></div>`).join('');
+        Object.values(this.connections).forEach(c => c.send({ type: 'scoreUpdate', score: this.players[c.peer]?.score || 0 }));
+    }
+
+    showOverlay(v) { document.getElementById('countdown-layer').style.display = 'flex'; document.getElementById('cd-num').innerText = v; }
+    hideOverlay() { document.getElementById('countdown-layer').style.display = 'none'; }
+    broadcast(m) { Object.values(this.connections).forEach(c => c.send(m)); }
+
+    joinGame() {
+        const c = document.getElementById('join-code').value.toUpperCase().trim();
+        const n = document.getElementById('join-name').value.toUpperCase().trim();
+        if(!c || !n) return;
+        document.getElementById('btn-join').innerText = "CONECTANDO...";
+        if(this.peer) this.peer.destroy();
+        this.peer = new Peer();
+        this.peer.on('open', () => {
+            const conn = this.peer.connect(`hacha-room-${c}`, { reliable: true });
+            conn.on('open', () => { this.conn = conn; conn.send({type:'join', name:n}); this.show('screen-controller'); });
+            conn.on('data', d => this.handleClientData(d));
+            conn.on('error', () => { alert("Error de conexión"); location.reload(); });
+        });
+    }
+
+    handleClientData(d) {
+        if(d.type==='phase'){ document.getElementById('ctrl-r1').style.display = d.phase==1?'block':'none'; document.getElementById('ctrl-r2').style.display = d.phase==2?'block':'none'; }
+        if(d.type==='status'){ 
+            const b = document.getElementById('buzzer'); document.getElementById('msg-box').innerText = d.msg;
+            if(d.locked) b.classList.add('disabled'); else b.classList.remove('disabled');
+            b.style.background = (d.color === 'orange') ? '#f97316' : '#ef4444';
+        }
+        if(d.type==='countdown'){ this.showOverlay(d.val); if(d.val==="YA!") setTimeout(()=>this.hideOverlay(), 800); }
+        if(d.type==='r2-data') document.getElementById('r2-mobile-data').innerText = d.text;
+        if(d.type==='r2-timer') document.getElementById('r2-mobile-timer').innerText = d.val;
+        if(d.type==='scoreUpdate') document.getElementById('my-score').innerText = d.score + " PTS";
+    }
+
+    buzz() { if(this.conn) this.conn.send({type:'buzz'}); }
+}
+
+const DB_QUESTIONS = [
+    {q: "¿Río más largo del mundo?", a: "Amazonas"},
+    {q: "¿Pintor de la Mona Lisa?", a: "Leonardo da Vinci"},
+    {q: "¿Planeta más cercano al Sol?", a: "Mercurio"},
+    {q: "¿Lados de un hexágono?", a: "Seis"},
+    {q: "¿Capital de Francia?", a: "París"},
+    {q: "¿Animal más rápido?", a: "Guepardo"},
+    {q: "¿Huesos del cuerpo humano?", a: "206"},
+    {q: "¿Año descubrimiento América?", a: "1492"},
+    {q: "¿Moneda de Japón?", a: "Yen"},
+    {q: "¿Rey de la selva?", a: "León"}
+];
+
+const app = new HachaEngine();
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("code")) { 
+    app.show('screen-join'); 
+    document.getElementById('join-code').value = urlParams.get("code"); 
+}
+</script>
+</body>
+</html>
