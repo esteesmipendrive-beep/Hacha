@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HACHA 🪓 | V10.2 REBOTE FINAL</title>
+<title>HACHA 🪓 | V12.0 RECOVERY</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -17,6 +17,7 @@
         --primary: #f97316; --primary-dark: #c2410c; 
         --success: #10b981; --success-dark: #047857;
         --danger: #f43f5e; --danger-dark: #be123c;
+        --info: #3b82f6; --info-dark: #1d4ed8;
         --text: #f8fafc; --violet: #8b5cf6; 
     }
     
@@ -28,7 +29,8 @@
     .active { display: flex; z-index: 10; animation: fadeIn 0.5s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
     
-    .card { background: var(--surface); padding: 3rem; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 0 2px rgba(255,255,255,0.1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); max-width: 950px; width: 95%; position: relative; margin: auto; }
+    .card { background: var(--surface); padding: 3rem; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 0 2px rgba(255,255,255,0.1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); max-width: 950px; width: 95%; position: relative; margin: auto; transition: 0.5s; }
+    .card.fire-mode { box-shadow: 0 30px 80px rgba(244, 63, 94, 0.6), inset 0 0 20px rgba(244, 63, 94, 0.5); border: 2px solid var(--danger); background: rgba(50, 10, 20, 0.85); }
     
     .main-logo { max-width: 350px; width: 100%; height: auto; margin: 0 auto 30px auto; background: rgba(255, 255, 255, 0.95); padding: 20px 40px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,255,255,1); display: block; }
     .mobile-logo { max-width: 250px; width: 100%; background: rgba(255, 255, 255, 0.95); padding: 15px 30px; border-radius: 20px; margin: 0 auto 40px auto; display: block; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -43,8 +45,8 @@
     
     .btn.green { background: var(--success); box-shadow: 0 8px 0 var(--success-dark); }
     .btn.red { background: var(--danger); box-shadow: 0 8px 0 var(--danger-dark); }
+    .btn.blue { background: var(--info); box-shadow: 0 8px 0 var(--info-dark); }
     .btn.reveal { background: var(--violet); box-shadow: 0 8px 0 #5b21b6; }
-    .btn.grey { background: #475569; box-shadow: 0 8px 0 #1e293b; }
 
     .cat-badge { display: inline-block; padding: 10px 25px; border-radius: 30px; font-size: 1.2rem; font-weight: 900; color: white; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
     .cat-geo { background: linear-gradient(135deg, #2563eb, #1d4ed8); } 
@@ -57,12 +59,17 @@
     .question-text { font-size: 2.8rem; line-height: 1.4; margin: 30px 0; font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
     .answer-text { font-size: 2.2rem; color: #facc15; font-weight: 900; margin: 30px 0; padding: 20px; background: rgba(250, 204, 21, 0.05); border-radius: 16px; border: 3px dashed rgba(250, 204, 21, 0.5); transition: filter 0.3s; }
     .blur-mode { filter: blur(20px); opacity: 0.1; }
-
     .timer-big { font-size: 8rem; font-weight: 900; color: var(--danger); margin: 10px 0; text-shadow: 0 0 30px rgba(244, 63, 94, 0.5); }
     
     .tiles-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
     .tile { width: 80px; height: 90px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; font-size: 3rem; font-weight: 900; display: flex; align-items: center; justify-content: center; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
     .tile.letter { background: linear-gradient(135deg, #eab308, #a16207); color: black; }
+
+    /* R2 TABLE */
+    .r2-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: rgba(0,0,0,0.3); border-radius: 15px; overflow: hidden; }
+    .r2-table th, .r2-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.4rem; text-align: center; }
+    .r2-table th { background: rgba(0,0,0,0.5); color: var(--primary); font-weight: 900; text-transform: uppercase; }
+    .r2-table tr:hover { background: rgba(255,255,255,0.05); }
 
     .lives-container { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
     .player-life-card { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; min-width: 140px; border: 2px solid #334155; transition: 0.3s; }
@@ -88,7 +95,7 @@
     .calc-btn.op { background: var(--primary); border-color: var(--primary-dark); }
     .calc-btn.clear { background: var(--danger); border-color: var(--danger-dark); }
     
-    .buzzer-btn { width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #f43f5e, #be123c); border: 12px solid #881337; color: white; font-size: 3.5rem; font-weight: 900; box-shadow: 0 25px 0 #4c0519, 0 30px 30px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: 0.1s; letter-spacing: 3px; }
+    .buzzer-btn { width: 300px; height: 300px; border-radius: 50%; background: var(--danger); border: 12px solid rgba(0,0,0,0.3); color: white; font-size: 4rem; font-weight: 900; box-shadow: 0 25px 0 rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: 0.1s; letter-spacing: 3px; }
     .buzzer-btn.disabled { background: #334155 !important; border-color: #1e293b !important; color: #64748b; pointer-events: none; transform: translateY(25px); box-shadow: none !important; }
 
     .rule-box { background: rgba(0,0,0,0.4); padding: 25px; border-radius: 20px; font-size: 1.4rem; line-height: 1.6; text-align: left; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
@@ -99,11 +106,18 @@
     #cd-num { animation: pulseCD 1s infinite; text-shadow: 0 0 80px var(--success); }
     @keyframes pulseCD { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     
-    .score-row-host { display:flex; justify-content:space-between; margin-bottom:10px; font-weight:900; font-size:1.1rem; padding: 8px; border-radius: 8px; transition: 0.2s; cursor: pointer; }
+    .score-row-host { display:flex; justify-content:space-between; margin-bottom:10px; font-weight:900; font-size:1.1rem; padding: 8px; border-radius: 8px; transition: 0.2s; cursor: pointer; align-items: center; gap: 10px; }
     .score-row-host:hover { background: rgba(255,255,255,0.1); }
 
     #referee-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:none; align-items:center; justify-content:center; backdrop-filter: blur(10px); }
     .referee-card { background:#0f172a; padding:40px; border-radius:24px; border:3px solid var(--primary); text-align:center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+
+    .reaction-fly { position: fixed; bottom: -50px; font-size: 5rem; z-index: 9999; pointer-events: none; animation: flyUp 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; text-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    @keyframes flyUp { 0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 1; } 100% { transform: translateY(-120vh) scale(1.5) rotate(30deg); opacity: 0; } }
+
+    .sabotage-grid { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+    .sabotage-btn { font-size: 3rem; background: #1e293b; border: 2px solid #334155; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation; transition: 0.1s; }
+    .sabotage-btn:active { transform: scale(0.8); background: #334155; }
 
     ::-webkit-scrollbar { width: 10px; }
     ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -114,7 +128,7 @@
 
 <div id="countdown-layer"><div id="cd-num" style="font-size: 15rem; font-weight: 900; color: white;">3</div></div>
 
-<div id="live-scoreboard" style="position:fixed; top:20px; right:20px; background:rgba(15,23,42,0.8); padding:20px; border-radius:16px; z-index:100; min-width:200px; display:none; border:1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+<div id="live-scoreboard" style="position:fixed; top:20px; right:20px; background:rgba(15,23,42,0.8); padding:20px; border-radius:16px; z-index:100; min-width:220px; display:none; border:1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
     <div style="font-size:0.9rem; opacity:0.7; font-weight:900; margin-bottom:10px; letter-spacing: 1px; color: var(--primary);">MODO ÁRBITRO (Clic)</div>
     <div id="score-list"></div>
 </div>
@@ -137,14 +151,17 @@
 <div id="screen-home" class="screen active">
     <img src="logo.png" alt="HACHA" class="main-logo" onerror="this.outerHTML='<h1>HACHA 🪓</h1>'">
     <p id="load-status" style="font-size: 1.2rem; font-weight: 700; color: #94a3b8;">Cargando base de datos...</p>
-    <button id="btn-host-start" class="btn" onclick="app.hostGame()" disabled>Crear Partida (Host)</button>
+    <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+        <button id="btn-host-start" class="btn" onclick="app.hostGame()" disabled>Crear Partida</button>
+        <button id="btn-host-resume" class="btn blue" onclick="app.resumeGame()" style="display:none;">Reanudar Partida</button>
+    </div>
 </div>
 
 <div id="screen-lobby" class="screen">
     <div class="card">
         <h2>SALA DE ESPERA</h2>
         <h1 id="display-code" style="font-family: monospace; letter-spacing: 12px; color:var(--primary); font-size: 5rem;">----</h1>
-        <div id="qrcode" style="display: flex; justify-content: center; margin: 30px 0; background: white; padding: 15px; border-radius: 16px;"></div>
+        <div id="qrcode" style="display: flex; justify-content: center; margin: 30px 0; background: white; padding: 15px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);"></div>
         <div id="players-list" style="margin: 20px 0; font-size: 1.4rem; font-weight: bold;"></div>
         <button class="btn green" onclick="app.startRound1Intro()">EMPEZAR JUEGO</button>
     </div>
@@ -157,9 +174,9 @@
             <ul>
                 <li><strong>10 Preguntas</strong> aleatorias de nivel fácil/medio.</li>
                 <li>Cuenta atrás de 3 segundos... ¡Y a pulsar!</li>
-                <li style="color:var(--success)">Acierto: <strong>+1 Punto</strong></li>
-                <li style="color:var(--danger)">Fallo: <strong>-1 Punto</strong> (Sin rebote).</li>
-                <li style="color:#facc15"><strong>Bomba de 15s:</strong> Si nadie pulsa, el sistema elegirá a alguien al azar.</li>
+                <li style="color:var(--success)">Acierto: <strong>+1 Punto</strong> | Fallo: <strong>-1 Punto</strong></li>
+                <li style="color:#facc15"><strong>Bomba de 15s:</strong> Si nadie pulsa, se obliga a responder a alguien al azar.</li>
+                <li style="color:var(--danger); font-size: 1.6rem; margin-top: 15px;">🔥 <strong>FASE DE FUEGO:</strong> Las 3 últimas preguntas valen el <strong>DOBLE (±2 PTS)</strong>.</li>
             </ul>
         </div>
         <button class="btn green" onclick="app.startRound1()">¡COMENZAR!</button>
@@ -167,19 +184,19 @@
 </div>
 
 <div id="screen-r1-game" class="screen">
-    <div class="card">
-        <div id="q-counter" style="font-weight: 800; opacity: 0.5; font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 10px;">PREGUNTA</div>
+    <div class="card" id="r1-card-element">
+        <div id="q-counter" style="font-weight: 900; opacity: 0.8; font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 10px;">PREGUNTA</div>
         <div id="q-cat" class="cat-badge cat-geo">CATEGORÍA</div>
         <div id="q-text" class="question-text">...</div>
         <div id="q-answer" class="answer-text blur-mode">...</div>
         
         <div id="r1-controls-reading">
             <button class="btn reveal" onclick="app.toggleAnswer()">👁️ VER RESPUESTA</button>
-            <button class="btn" style="background:#3b82f6" onclick="app.startCountdown()">⏱️ CUENTA ATRÁS</button>
+            <button class="btn" style="background:#3b82f6; box-shadow: 0 8px 0 #1d4ed8;" onclick="app.startCountdown()">⏱️ CUENTA ATRÁS</button>
         </div>
         
         <div id="r1-controls-judging" style="display:none;">
-            <div id="answering-name" style="font-size:3rem; font-weight:900; color:var(--primary); margin-bottom:20px;">...</div>
+            <div id="answering-name" style="font-size:3.5rem; font-weight:900; color:white; margin-bottom:20px; text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);">...</div>
             <button class="btn reveal" id="btn-reveal-judge" onclick="app.confirmReveal()">👁️ DESVELAR RESPUESTA</button>
             <div id="judge-buttons" style="display:none; gap:15px; justify-content:center;">
                 <button class="btn green" onclick="app.judge(true)">✅ CORRECTO</button>
@@ -199,10 +216,10 @@
         <div class="rule-box">
             <ul>
                 <li>4 pruebas: <strong>2 de Cálculo y 2 de Léxico</strong>.</li>
-                <li><strong>Cálculo:</strong> Acércate al número objetivo usando operaciones básicas.</li>
-                <li><strong>Léxico:</strong> Forma la palabra más larga con las letras dadas.</li>
+                <li><strong>Cálculo:</strong> Acércate al número objetivo usando las cifras dadas.</li>
+                <li><strong>Léxico:</strong> Forma la palabra más larga posible.</li>
                 <li style="color:var(--danger)">Tiempo: <strong>30 Segundos</strong> por prueba.</li>
-                <li>El presentador decidirá quién se lleva los <strong>+2 PUNTOS</strong>.</li>
+                <li style="color:#facc15">Usa tu móvil y pulsa <strong>ENVIAR</strong> antes de que acabe el tiempo. El sistema evaluará quién es el ganador objetivo y le dará <strong>+2 PUNTOS</strong>.</li>
             </ul>
         </div>
         <button class="btn green" onclick="app.startRound2()">COMENZAR RONDA 2</button>
@@ -219,10 +236,14 @@
         <div id="r2-controls-start">
             <button class="btn" style="background:#3b82f6" onclick="app.startR2Timer()">▶ INICIAR TIEMPO (30s)</button>
         </div>
-        <div id="r2-controls-score" style="display:none;">
-            <p style="font-size: 1.5rem; font-weight:bold; margin-bottom: 20px;">¿Quién ha sido el más rápido/preciso?</p>
-            <div id="r2-winner-btns" style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;"></div>
-            <button class="btn grey" style="margin-top: 30px;" onclick="app.nextSubRound()">NADIE</button>
+        
+        <div id="r2-controls-score" style="display:none; width: 100%;">
+            <p style="font-size: 1.8rem; font-weight:bold; margin-bottom: 20px; color: var(--success);">ANÁLISIS DEL SISTEMA</p>
+            <table class="r2-table" id="r2-results-table">
+                <thead><tr><th>Jugador</th><th>Enviado</th><th>Puntuación</th><th>Tiempo</th><th>Juez</th></tr></thead>
+                <tbody id="r2-results-body"></tbody>
+            </table>
+            <button class="btn grey" style="margin-top: 30px;" onclick="app.nextSubRound()">NADIE / SALTAR</button>
         </div>
     </div>
 </div>
@@ -240,12 +261,11 @@
         <h1 style="color:var(--success)">RONDA 3: SUPERVIVENCIA 💀</h1>
         <div class="rule-box">
             <ul>
-                <li>Entramos en la <strong>zona de eliminación</strong>.</li>
                 <li>Tus puntos se convierten en <strong>VIDAS (❤️)</strong>.</li>
-                <li>El sistema elegirá los turnos de uno en uno. No hay pulsador.</li>
-                <li><span style="color:var(--success)">Acierto:</span> Conservas tu vida y pasas el turno.</li>
-                <li><span style="color:var(--danger)">Fallo:</span> <strong>Pierdes 1 VIDA</strong>.</li>
-                <li>Si llegas a 0 vidas, quedas <strong>ELIMINADO</strong>. Solo pueden quedar 2.</li>
+                <li>El sistema elegirá los turnos. No hay pulsador.</li>
+                <li><span style="color:var(--success)">Acierto:</span> Pasas el turno. | <span style="color:var(--danger)">Fallo:</span> <strong>Pierdes 1 VIDA</strong>.</li>
+                <li>Si llegas a 0 vidas, quedas <strong>ELIMINADO</strong>. Solo sobreviven 2.</li>
+                <li style="color:#8b5cf6; margin-top: 10px;">👻 <strong>SABOTAJE:</strong> Los eliminados usarán su móvil para enviar reacciones y abucheos a la pantalla.</li>
             </ul>
         </div>
         <button class="btn green" onclick="app.startRound3()">ENTRAR A LA ARENA</button>
@@ -282,10 +302,10 @@
         <div class="rule-box">
             <ul>
                 <li>Duelo a muerte entre los <strong>2 Finalistas</strong>.</li>
-                <li>Por turnos, se elige una categoría. <strong>No se usa el pulsador.</strong></li>
+                <li>Por turnos, se elige una categoría. <strong>No hay pulsador.</strong></li>
                 <li><span style="color:var(--danger)"><strong>15 SEGUNDOS</strong></span> para responder en voz alta.</li>
-                <li>Si aciertas: Ganas el color y conservas el turno.</li>
-                <li>Si fallas: La misma pregunta va al <strong>REBOTE</strong> para el rival.</li>
+                <li><span style="color:var(--success)">Acierto:</span> Ganas el color y conservas el turno.</li>
+                <li><span style="color:var(--danger)">Fallo:</span> <strong>¡REBOTE AL RIVAL!</strong> El rival puede robar el color.</li>
                 <li><strong>Victoria:</strong> El primero en conseguir los 6 colores.</li>
             </ul>
         </div>
@@ -346,22 +366,23 @@
     </div>
 </div>
 
-<div id="screen-controller" class="screen" style="background:black; justify-content:flex-start; padding-top: 20px;">
-    <div id="my-score" style="position:absolute; top:25px; right:25px; color:#facc15; font-weight:900; font-size:1.5rem;">0 PTS</div>
-    <div id="r3-lives-mobile" style="position:absolute; top:25px; left:25px; color:var(--danger); font-weight:900; font-size: 1.5rem; display:none;"></div>
+<div id="screen-controller" class="screen" style="background:var(--bg-dark); justify-content:flex-start; padding-top: 20px;">
+    <div style="position:absolute; top:20px; right:20px; font-size:2.5rem;" id="my-avatar">👤</div>
+    <div id="my-score" style="position:absolute; top:25px; left:25px; color:#fff; font-weight:900; font-size:1.5rem; background:rgba(0,0,0,0.5); padding: 5px 15px; border-radius:20px;">0 PTS</div>
+    <div id="r3-lives-mobile" style="position:absolute; top:70px; left:25px; color:var(--danger); font-weight:900; font-size: 1.5rem; display:none;"></div>
     
-    <div id="ctrl-standard" style="display:flex; flex-direction:column; align-items:center; width:100%; margin-top: 50px;">
-        <div id="msg-box" style="margin-bottom:50px; font-size:2.2rem; color:white; font-weight:900; text-align:center; text-transform:uppercase;">ESPERANDO...</div>
+    <div id="ctrl-standard" style="display:flex; flex-direction:column; align-items:center; width:100%; margin-top: 80px;">
+        <div id="msg-box" style="margin-bottom:40px; font-size:2.2rem; color:white; font-weight:900; text-align:center; text-transform:uppercase;">ESPERANDO...</div>
         <button id="buzzer" class="buzzer-btn disabled" ontouchstart="app.buzz()" onclick="app.buzz()">BUZZ</button>
     </div>
     
-    <div id="ctrl-r2" style="display:none; flex-direction:column; align-items:center; width:100%; max-width: 500px; margin: auto; margin-top: 20px;">
+    <div id="ctrl-r2" style="display:none; flex-direction:column; align-items:center; width:100%; max-width: 500px; margin: auto; margin-top: 50px;">
         <div id="r2-mobile-timer" style="font-size: 4.5rem; font-weight:900; color:var(--danger); margin-bottom: 5px;">30</div>
         <div id="r2-mobile-data" style="font-size: 2rem; font-weight:900; color:white; text-align:center; background: #1e293b; padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #334155;">...</div>
         
         <div id="r2-tool-lex" style="display:none; width:100%; margin-top: 15px;">
-            <p style="color:#94a3b8; font-weight:bold; margin-bottom:5px;">BLOC DE NOTAS:</p>
-            <input type="text" class="game-input" placeholder="Escribe aquí..." style="font-size: 1.5rem; padding: 12px;">
+            <input type="text" id="r2-lex-input" class="game-input" placeholder="Escribe tu palabra..." style="font-size: 1.5rem; padding: 12px; margin-bottom:10px;">
+            <button class="btn green" id="btn-r2-submit-lex" style="width:100%; padding:15px; margin:0;" onclick="app.submitR2Lex()">ENVIAR PALABRA</button>
         </div>
         
         <div id="r2-tool-math" style="display:none; width:100%; margin-top: 15px;">
@@ -372,15 +393,22 @@
                 <button class="calc-btn" onclick="app.c('1')">1</button><button class="calc-btn" onclick="app.c('2')">2</button><button class="calc-btn" onclick="app.c('3')">3</button><button class="calc-btn op" onclick="app.c('-')">-</button>
                 <button class="calc-btn clear" onclick="app.c('C')">C</button><button class="calc-btn" onclick="app.c('0')">0</button><button class="calc-btn op" onclick="app.c('=')">=</button><button class="calc-btn op" onclick="app.c('+')">+</button>
             </div>
+            <button class="btn green" id="btn-r2-submit-math" style="width:100%; padding:15px; margin-top:15px; margin-bottom:0;" onclick="app.submitR2Math()">ENVIAR CIFRA</button>
         </div>
     </div>
 
-    <div id="ctrl-spectator" style="display:none; flex-direction:column; align-items:center; width:100%; margin-top: 100px;">
-        <h2 style="color:var(--danger); font-size: 4rem;">ELIMINADO</h2>
-        <p style="font-size: 1.5rem; color: #94a3b8; font-weight: bold;">Modo espectador</p>
+    <div id="ctrl-spectator" style="display:none; flex-direction:column; align-items:center; width:100%; margin-top: 80px;">
+        <h2 style="color:var(--danger); font-size: 3rem;">ELIMINADO</h2>
+        <p style="font-size: 1.2rem; color: #94a3b8; font-weight: bold; margin-bottom: 30px;">Puedes enviar reacciones a la TV:</p>
+        <div class="sabotage-grid">
+            <button class="sabotage-btn" onclick="app.sendReaction('💩')">💩</button>
+            <button class="sabotage-btn" onclick="app.sendReaction('🍅')">🍅</button>
+            <button class="sabotage-btn" onclick="app.sendReaction('👏')">👏</button>
+            <button class="sabotage-btn" onclick="app.sendReaction('🥶')">🥶</button>
+        </div>
     </div>
     
-    <div id="ctrl-r4" style="display:none; flex-direction:column; align-items:center; width:100%;">
+    <div id="ctrl-r4" style="display:none; flex-direction:column; align-items:center; width:100%; margin-top: 60px;">
         <h2 style="color:#facc15; font-size:2.8rem; text-transform:uppercase; margin-bottom: 10px;">LA GRAN FINAL</h2>
         <div id="r4-mobile-msg" style="font-size: 1.8rem; font-weight:bold; color:white; margin: 20px 0; text-align:center; padding: 25px; background: #1e293b; border-radius: 20px; width: 100%; border: 2px solid #334155;">...</div>
         <div style="background: #0f172a; padding: 25px; border-radius: 20px; width: 100%; border: 2px solid #334155;">
@@ -404,9 +432,12 @@ const AudioEngine = {
     correct: function() { this.playTone(600, 'sine', 0.1); setTimeout(()=>this.playTone(800, 'sine', 0.3), 100); },
     wrong: function() { this.playTone(200, 'square', 0.4, 0.2); setTimeout(()=>this.playTone(150, 'square', 0.6, 0.2), 200); },
     tick: function() { this.playTone(1000, 'sine', 0.05, 0.05); },
+    pop: function() { this.playTone(400, 'sine', 0.1, 0.05); },
     win: function() { [400, 500, 600, 800].forEach((f, i) => setTimeout(() => this.playTone(f, 'sine', 0.2), i * 150)); setTimeout(() => this.playTone(1000, 'sine', 1.0), 600); }
 };
 
+const AVATARS = ['🦊', '🐼', '🦁', '🐸', '🐵', '🦄', '🐯', '🐰', '🐷', '🐨'];
+const PLAYER_COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
 const CAT_COLORS = { "Geografía": "#3b82f6", "Arte y Literatura": "#a16207", "Historia": "#eab308", "Entretenimiento": "#ec4899", "Ciencias y Naturaleza": "#22c55e", "Deportes": "#f97316" };
 const CAT_CLASSES = { "Geografía": "cat-geo", "Arte y Literatura": "cat-art", "Historia": "cat-his", "Entretenimiento": "cat-ent", "Ciencias y Naturaleza": "cat-sci", "Deportes": "cat-spo" };
 
@@ -422,11 +453,13 @@ class HachaEngine {
         this.peer = null; this.conn = null; this.connections = {}; this.players = {};
         this.roomCode = ""; this.phase = 0;
         this.buzzerLocked = true; this.currentAnswererId = null;
-        this.questionsDB = []; 
-        this.history = new HistoryManager();
+        this.questionsDB = []; this.history = new HistoryManager();
         
         this.r1Timeout = null; this.r1Questions = []; this.r1Idx = 0;
+        
         this.subRound = 0; this.r2Timer = 30; this.r2Interval = null; this.calcStr = "";
+        this.r2Target = 0; this.r2Submissions = {}; // Para el submit automático
+        
         this.r3Order = []; this.r3TurnIdx = 0;
         this.r4Finalists = []; this.r4TurnIdx = 0; this.r4CurrentCat = ""; this.r4Interval = null;
         this.refereeTargetId = null;
@@ -440,22 +473,97 @@ class HachaEngine {
             document.getElementById('load-status').innerText = `✅ ${this.questionsDB.length} Preguntas Listas.`;
             document.getElementById('btn-host-start').disabled = false;
             
+            // Check for Soft Recovery
+            if(sessionStorage.getItem('hacha_state')) {
+                document.getElementById('btn-host-resume').style.display = 'block';
+            }
             if(this.history.used.length > (this.questionsDB.length * 0.8)) this.history.clearHistory();
         } catch (e) {
             document.getElementById('load-status').innerText = "❌ Error cargando preguntas.json";
         }
     }
 
+    syncState() {
+        if(!this.roomCode) return;
+        const state = {
+            roomCode: this.roomCode, phase: this.phase, players: this.players,
+            r1Idx: this.r1Idx, subRound: this.subRound, r3Order: this.r3Order,
+            r3TurnIdx: this.r3TurnIdx, r4Finalists: this.r4Finalists, r4TurnIdx: this.r4TurnIdx
+        };
+        sessionStorage.setItem('hacha_state', JSON.stringify(state));
+    }
+
+    resumeGame() {
+        const state = JSON.parse(sessionStorage.getItem('hacha_state'));
+        if(!state) return;
+        
+        AudioEngine.init();
+        this.roomCode = state.roomCode; this.phase = state.phase; this.players = state.players;
+        this.r1Idx = state.r1Idx; this.subRound = state.subRound; this.r3Order = state.r3Order;
+        this.r3TurnIdx = state.r3TurnIdx; this.r4Finalists = state.r4Finalists; this.r4TurnIdx = state.r4TurnIdx;
+        
+        this.setupPeerHost();
+    }
+
+    setupPeerHost() {
+        this.peer = new Peer(`hacha-room-${this.roomCode}`);
+        this.peer.on('open', () => {
+            document.getElementById('display-code').innerText = this.roomCode;
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), { text: `${window.location.origin}${window.location.pathname}?code=${this.roomCode}`, width: 180, height: 180 });
+            
+            if(this.phase === 0) this.show('screen-lobby');
+            else this.showRanking(); // Soft recovery routes to Ranking safe-state
+            
+            this.updateLobbyList();
+            this.updateScoreboard();
+        });
+        this.peer.on('connection', c => {
+            c.on('data', d => this.handleHostData(c, d));
+            c.on('close', () => { delete this.players[c.peer]; this.updateScoreboard(); this.updateLobbyList(); this.syncState(); });
+            this.connections[c.peer] = c;
+        });
+    }
+
+    hostGame() {
+        AudioEngine.init(); 
+        this.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        this.setupPeerHost();
+    }
+
+    handleHostData(c, d) {
+        if (d.type === 'join') { 
+            // Si es un jugador que reconecta, mantener datos
+            if(this.players[c.peer]) {
+                const p = this.players[c.peer];
+                c.send({ type: 'joined_ok', avatar: p.avatar, color: p.color });
+                c.send({ type: 'scoreUpdate', score: p.score });
+                if(this.phase > 0) c.send({ type: 'phase', phase: this.phase });
+                if(this.phase === 4) this.broadcastR4State(); // Reenviar su estado de R4
+            } else {
+                const nPlayers = Object.keys(this.players).length;
+                const av = AVATARS[nPlayers % AVATARS.length];
+                const col = PLAYER_COLORS[nPlayers % PLAYER_COLORS.length];
+                this.players[c.peer] = { name: d.name, score: 0, id: c.peer, lives: 3, eliminated: false, quesitos: [], avatar: av, color: col }; 
+                c.send({ type: 'joined_ok', avatar: av, color: col });
+            }
+            this.updateScoreboard(); this.updateLobbyList(); this.syncState();
+        }
+        if (d.type === 'buzz') this.handleBuzz(c.peer);
+        if (d.type === 'reaction') this.showReaction(d.emoji);
+        if (d.type === 'r2_submit') {
+            if(this.r2Timer > 0) this.r2Submissions[c.peer] = { val: d.val, time: this.r2Timer };
+        }
+    }
+
     getSafeQuestion(diffMax, diffMin = 1, category = null) {
         let pool = this.questionsDB.filter(q => q.dif >= diffMin && q.dif <= diffMax && !this.history.isUsed(q.q));
         if (category) pool = pool.filter(q => q.cat === category);
-        
         if (pool.length === 0) {
             this.history.clearHistory();
             pool = this.questionsDB.filter(q => q.dif >= diffMin && q.dif <= diffMax);
             if (category) pool = pool.filter(q => q.cat === category);
         }
-        
         const q = pool[Math.floor(Math.random() * pool.length)];
         this.history.markUsed(q.q);
         return q;
@@ -467,78 +575,60 @@ class HachaEngine {
         document.getElementById('live-scoreboard').style.display = (id.includes('game') && id !== 'screen-r3-game' && id !== 'screen-r4-game') ? 'block' : 'none';
     }
 
-    hostGame() {
-        AudioEngine.init(); 
-        this.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
-        this.peer = new Peer(`hacha-room-${this.roomCode}`);
-        this.peer.on('open', () => {
-            const url = `${window.location.origin}${window.location.pathname}?code=${this.roomCode}`;
-            document.getElementById('display-code').innerText = this.roomCode;
-            document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: url, width: 180, height: 180 });
-            this.show('screen-lobby');
-        });
-        this.peer.on('connection', c => {
-            c.on('data', d => this.handleHostData(c, d));
-            c.on('close', () => { delete this.players[c.peer]; this.updateScoreboard(); this.updateLobbyList(); });
-            this.connections[c.peer] = c;
-        });
-    }
-
-    handleHostData(c, d) {
-        if (d.type === 'join') { 
-            this.players[c.peer] = { name: d.name, score: 0, id: c.peer, lives: 3, eliminated: false, quesitos: [] }; 
-            this.updateScoreboard(); this.updateLobbyList();
-        }
-        if (d.type === 'buzz') this.handleBuzz(c.peer);
+    showReaction(emoji) {
+        AudioEngine.pop();
+        const el = document.createElement('div'); el.className = 'reaction-fly'; el.innerText = emoji;
+        el.style.left = Math.random() * 80 + 10 + '%'; document.body.appendChild(el);
+        setTimeout(() => el.remove(), 2500);
     }
 
     updateLobbyList() {
-        document.getElementById('players-list').innerHTML = Object.values(this.players).map(p => `<span style="background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:30px; display:inline-block; margin:5px; border: 1px solid rgba(255,255,255,0.2);">👤 ${p.name}</span>`).join('');
+        document.getElementById('players-list').innerHTML = Object.values(this.players).map(p => `<span style="background:rgba(255,255,255,0.1); padding:10px 20px; border-radius:30px; display:inline-block; margin:5px; border: 2px solid ${p.color}; color:white;">${p.avatar} ${p.name}</span>`).join('');
     }
 
     openReferee(id) {
         this.refereeTargetId = id;
-        document.getElementById('ref-name').innerText = this.players[id].name;
+        document.getElementById('ref-name').innerText = `${this.players[id].avatar} ${this.players[id].name}`;
         document.getElementById('referee-modal').style.display = 'flex';
     }
-    adjScore(val) { if(!this.refereeTargetId) return; this.players[this.refereeTargetId].score += val; this.updateScoreboard(); }
+    adjScore(val) { if(!this.refereeTargetId) return; this.players[this.refereeTargetId].score += val; this.updateScoreboard(); this.syncState(); }
     adjLife(val) {
         if(!this.refereeTargetId) return; const p = this.players[this.refereeTargetId]; p.lives += val;
         if(p.lives > 0) p.eliminated = false; if(p.lives <= 0) p.eliminated = true;
-        if(this.phase === 3) this.updateR3LivesUI(); this.updateScoreboard();
+        if(this.phase === 3) { this.updateR3LivesUI(); this.broadcastTurnR3(this.currentAnswererId); } // Update spectators
+        this.updateScoreboard(); this.syncState();
     }
 
     // --- RONDA 1 ---
     startRound1Intro() { this.show('screen-r1-intro'); }
-
     startRound1() { 
         this.phase = 1; this.r1Idx = 0; 
-        this.r1Questions = [];
-        for(let i=0; i<10; i++) this.r1Questions.push(this.getSafeQuestion(2)); 
-        this.broadcast({ type: 'phase', phase: 1 }); 
+        this.r1Questions = []; for(let i=0; i<10; i++) this.r1Questions.push(this.getSafeQuestion(2)); 
+        this.broadcast({ type: 'phase', phase: 1 }); this.syncState();
         this.nextQuestion(); 
     }
     
     nextQuestion() {
         if (this.r1Idx >= 10) { this.showRanking(); return; }
-        const q = this.r1Questions[this.r1Idx]; 
-        this.r1Idx++;
+        const q = this.r1Questions[this.r1Idx]; this.r1Idx++; this.syncState();
         
         this.show('screen-r1-game');
-        document.getElementById('q-counter').innerText = `PREGUNTA ${this.r1Idx}/10`;
-        const badge = document.getElementById('q-cat');
-        badge.className = `cat-badge ${CAT_CLASSES[q.cat] || ''}`;
-        badge.innerText = q.cat || 'General';
+        const card = document.getElementById('r1-card-element');
+        const counter = document.getElementById('q-counter');
         
-        document.getElementById('q-text').innerText = q.q; 
-        document.getElementById('q-answer').innerText = q.a;
+        if(this.r1Idx >= 8) {
+            card.classList.add('fire-mode'); counter.innerText = `🔥 PREGUNTA ${this.r1Idx}/10 (±2 PTS)`; counter.style.color = "var(--primary)";
+        } else {
+            card.classList.remove('fire-mode'); counter.innerText = `PREGUNTA ${this.r1Idx}/10`; counter.style.color = "white";
+        }
+
+        const badge = document.getElementById('q-cat');
+        badge.className = `cat-badge ${CAT_CLASSES[q.cat] || ''}`; badge.innerText = q.cat || 'General';
+        
+        document.getElementById('q-text').innerText = q.q; document.getElementById('q-answer').innerText = q.a;
         document.getElementById('q-answer').classList.add('blur-mode');
-        document.getElementById('r1-controls-reading').style.display = 'block';
-        document.getElementById('r1-controls-judging').style.display = 'none';
-        document.getElementById('r1-controls-next').style.display = 'none';
-        this.buzzerLocked = true; 
-        this.broadcast({ type: 'status', msg: 'ESCUCHA LA PREGUNTA...', locked: true });
+        document.getElementById('r1-controls-reading').style.display = 'block'; document.getElementById('r1-controls-judging').style.display = 'none'; document.getElementById('r1-controls-next').style.display = 'none';
+        this.buzzerLocked = true; this.broadcast({ type: 'status', msg: 'ESCUCHA LA PREGUNTA...', locked: true });
     }
 
     startCountdown() {
@@ -551,9 +641,7 @@ class HachaEngine {
     }
 
     unlockBuzzers() { 
-        this.buzzerLocked = false; 
-        this.broadcast({ type: 'status', msg: '¡PULSA!', color: 'red', locked: false }); 
-        
+        this.buzzerLocked = false; this.broadcast({ type: 'status', msg: '¡PULSA!', color: 'red', locked: false }); 
         if(this.r1Timeout) clearTimeout(this.r1Timeout);
         this.r1Timeout = setTimeout(() => {
             if(!this.buzzerLocked) {
@@ -568,16 +656,13 @@ class HachaEngine {
     }
 
     handleBuzz(id) {
-        if (this.buzzerLocked) return;
-        this.buzzerLocked = true; 
-        this.currentAnswererId = id;
-        if(this.r1Timeout) clearTimeout(this.r1Timeout);
-        AudioEngine.buzz();
+        if (this.buzzerLocked) return; this.buzzerLocked = true; this.currentAnswererId = id;
+        if(this.r1Timeout) clearTimeout(this.r1Timeout); AudioEngine.buzz();
         
         document.getElementById('r1-controls-judging').style.display = 'block';
-        document.getElementById('answering-name').innerText = this.players[id].name;
-        document.getElementById('btn-reveal-judge').style.display = 'block';
-        document.getElementById('judge-buttons').style.display = 'none';
+        const p = this.players[id];
+        document.getElementById('answering-name').innerHTML = `<span style="font-size:2rem">${p.avatar}</span> <span style="color:${p.color}">${p.name}</span>`;
+        document.getElementById('btn-reveal-judge').style.display = 'block'; document.getElementById('judge-buttons').style.display = 'none';
         
         Object.values(this.connections).forEach(c => {
             if(c.peer === id) c.send({ type: 'status', msg: '¡TU TURNO!', color: 'orange', locked: true });
@@ -593,10 +678,10 @@ class HachaEngine {
 
     judge(ok) {
         const p = this.players[this.currentAnswererId];
-        if (ok) { p.score++; confetti({ origin: { y: 0.8 } }); AudioEngine.correct(); }
-        else { p.score--; AudioEngine.wrong(); }
-        this.updateScoreboard();
-        this.finishQ(); 
+        const pts = (this.r1Idx >= 8) ? 2 : 1; 
+        if (ok) { p.score += pts; confetti({ origin: { y: 0.8 } }); AudioEngine.correct(); }
+        else { p.score -= pts; AudioEngine.wrong(); }
+        this.updateScoreboard(); this.syncState(); this.finishQ(); 
     }
 
     finishQ() { 
@@ -611,7 +696,7 @@ class HachaEngine {
     showRanking() {
         this.show('screen-ranking');
         const sorted = Object.values(this.players).sort((a,b) => b.score - a.score);
-        document.getElementById('ranking-list').innerHTML = sorted.map((p, i) => `<div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:15px; margin-bottom:15px; display:flex; justify-content:space-between; font-weight:900; font-size:1.6rem; border: 1px solid rgba(255,255,255,0.05);"><span>${i+1}. ${p.name}</span><span style="color:var(--primary);">${p.score} PTS</span></div>`).join('');
+        document.getElementById('ranking-list').innerHTML = sorted.map((p, i) => `<div style="background:rgba(0,0,0,0.4); padding:20px; border-radius:15px; margin-bottom:15px; display:flex; justify-content:space-between; font-weight:900; font-size:1.6rem; border-left: 5px solid ${p.color};"><span>${i+1}. ${p.avatar} ${p.name}</span><span style="color:var(--primary);">${p.score} PTS</span></div>`).join('');
     }
 
     nextPhaseFromRanking() {
@@ -620,28 +705,31 @@ class HachaEngine {
         else if (this.phase === 3) this.startRound4Intro();
     }
 
-    // --- RONDA 2 ---
+    // --- RONDA 2 AUTOMATIZADA ---
     startRound2Intro() { this.show('screen-r2-intro'); }
-    startRound2() { this.phase = 2; this.subRound = 0; this.broadcast({ type: 'phase', phase: 2 }); this.setupSubRound(); }
+    startRound2() { this.phase = 2; this.subRound = 0; this.broadcast({ type: 'phase', phase: 2 }); this.syncState(); this.setupSubRound(); }
     
     setupSubRound() {
         this.show('screen-r2-game');
         document.getElementById('r2-controls-start').style.display = 'block';
         document.getElementById('r2-controls-score').style.display = 'none';
+        this.r2Submissions = {}; // Reset submissions
+        
         const isM = (this.subRound % 2 === 0); 
         document.getElementById('r2-title').innerText = isM ? "CÁLCULO" : "LÉXICO";
         
         const info = isM ? this.genMath() : this.genLex();
         this.broadcast({ type: 'r2-data', text: info.text, isMath: isM }); 
         this.broadcast({ type: 'r2-timer', val: 30 });
+        this.syncState();
     }
 
     genMath() {
         document.getElementById('math-target').style.display = 'block';
-        const target = Math.floor(Math.random() * 900) + 100; document.getElementById('math-target').innerText = target;
+        this.r2Target = Math.floor(Math.random() * 900) + 100; document.getElementById('math-target').innerText = this.r2Target;
         let t = [1,2,3,4,5,6,7,8,9,10,25,50,75,100].sort(()=>.5-Math.random()).slice(0,6);
         document.getElementById('tiles-container').innerHTML = t.map(x => `<div class="tile">${x}</div>`).join('');
-        return { text: `OBJ: ${target}\nCIFRAS: ${t.join(' ')}` };
+        return { text: `OBJ: ${this.r2Target}\nCIFRAS: ${t.join(' ')}` };
     }
 
     genLex() {
@@ -655,24 +743,67 @@ class HachaEngine {
 
     startR2Timer() {
         document.getElementById('r2-controls-start').style.display = 'none'; this.r2Timer = 30;
+        this.broadcast({ type: 'r2-unlock' }); // Activa botones en móvil
         if(this.r2Interval) clearInterval(this.r2Interval);
         this.r2Interval = setInterval(() => { 
             this.r2Timer--; this.broadcast({ type: 'r2-timer', val: this.r2Timer }); 
             document.getElementById('r2-timer').innerText = this.r2Timer;
             if(this.r2Timer <= 5 && this.r2Timer > 0) AudioEngine.tick();
-            if(this.r2Timer<=0){ clearInterval(this.r2Interval); AudioEngine.wrong(); this.r2End(); } 
+            if(this.r2Timer<=0){ clearInterval(this.r2Interval); AudioEngine.wrong(); this.broadcast({ type: 'r2-lock' }); this.r2End(); } 
         }, 1000);
     }
 
     r2End() {
         document.getElementById('r2-controls-score').style.display = 'block';
-        document.getElementById('r2-winner-btns').innerHTML = Object.values(this.players).map(p => `<button class="btn green" style="width:auto" onclick="app.awardR2('${p.id}')">${p.name}</button>`).join('');
+        const isM = (this.subRound % 2 === 0);
+        
+        let results = Object.keys(this.r2Submissions).map(id => {
+            const sub = this.r2Submissions[id];
+            const p = this.players[id];
+            let score = 0; let valid = true;
+            if(isM) {
+                const num = Number(sub.val);
+                if(isNaN(num)) { score = 9999; valid = false; } else { score = Math.abs(num - this.r2Target); }
+            } else {
+                const word = String(sub.val).trim();
+                score = word.length; // En Léxico el score es la longitud (más es mejor)
+            }
+            return { id: id, name: p.name, avatar: p.avatar, color: p.color, val: sub.val, time: sub.time, score: score, valid: valid };
+        });
+
+        // Ordenar resultados
+        if(isM) {
+            results.sort((a,b) => {
+                if(a.score !== b.score) return a.score - b.score; // Menor diferencia a target
+                return b.time - a.time; // Desempate: mayor tiempo sobrante (más rápido)
+            });
+        } else {
+            results.sort((a,b) => {
+                if(a.score !== b.score) return b.score - a.score; // Mayor longitud
+                return b.time - a.time; // Desempate: mayor tiempo sobrante
+            });
+        }
+
+        const tbody = document.getElementById('r2-results-body');
+        if(results.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5">Nadie envió respuesta</td></tr>`;
+        } else {
+            tbody.innerHTML = results.map(r => `
+                <tr>
+                    <td style="color:${r.color}; font-weight:bold;">${r.avatar} ${r.name}</td>
+                    <td style="font-weight:900;">${r.val || '-'}</td>
+                    <td>${isM ? (r.valid ? `Diferencia: ${r.score}` : 'Inválido') : `${r.score} letras`}</td>
+                    <td>${r.time}s</td>
+                    <td><button class="btn green small" style="margin:0;" onclick="app.awardR2('${r.id}')">+2 PTS</button></td>
+                </tr>
+            `).join('');
+        }
     }
 
-    awardR2(id) { if(this.players[id]) { this.players[id].score += 2; AudioEngine.correct(); confetti({origin:{y:0.8}}); } this.updateScoreboard(); this.nextSubRound(); }
-    nextSubRound() { this.subRound++; if(this.subRound>=4) this.showRanking(); else this.setupSubRound(); }
+    awardR2(id) { if(this.players[id]) { this.players[id].score += 2; AudioEngine.correct(); confetti({origin:{y:0.8}}); } this.updateScoreboard(); this.syncState(); this.nextSubRound(); }
+    nextSubRound() { this.subRound++; this.syncState(); if(this.subRound>=4) this.showRanking(); else this.setupSubRound(); }
 
-    // --- RONDA 3 ---
+    // --- RONDA 3: SUPERVIVENCIA ---
     startRound3Intro() { this.show('screen-r3-intro'); }
     startRound3() {
         this.phase = 3;
@@ -680,7 +811,7 @@ class HachaEngine {
         const n = sorted.length;
         sorted.forEach((p, i) => { p.lives = Math.max(1, Math.min(5, n - i)); p.eliminated = false; });
         this.r3Order = sorted.map(p => p.id); this.r3TurnIdx = 0;
-        this.broadcast({ type: 'phase', phase: 3 });
+        this.broadcast({ type: 'phase', phase: 3 }); this.syncState();
         this.nextR3Question();
     }
 
@@ -691,21 +822,19 @@ class HachaEngine {
         
         const activeId = this.r3Order[this.r3TurnIdx];
         this.currentAnswererId = activeId;
+        const p = this.players[activeId];
         const q = this.getSafeQuestion(3, 2); 
 
         this.show('screen-r3-game');
         const badge = document.getElementById('r3-q-cat');
-        badge.className = `cat-badge ${CAT_CLASSES[q.cat] || ''}`;
-        badge.innerText = q.cat || 'General';
+        badge.className = `cat-badge ${CAT_CLASSES[q.cat] || ''}`; badge.innerText = q.cat || 'General';
         
-        document.getElementById('r3-q-text').innerText = `Turno de: ${this.players[activeId].name}\n\n${q.q}`;
-        document.getElementById('r3-q-answer').innerText = q.a;
-        document.getElementById('r3-q-answer').classList.add('blur-mode');
+        document.getElementById('r3-q-text').innerHTML = `<span style="font-size:1.5rem; color:#94a3b8;">Turno de ${p.avatar} ${p.name}</span><br>${q.q}`;
+        document.getElementById('r3-q-answer').innerText = q.a; document.getElementById('r3-q-answer').classList.add('blur-mode');
         
-        document.getElementById('r3-controls-reading').style.display = 'block';
-        document.getElementById('r3-controls-judging').style.display = 'none';
+        document.getElementById('r3-controls-reading').style.display = 'block'; document.getElementById('r3-controls-judging').style.display = 'none';
         
-        this.updateR3LivesUI(); this.broadcastTurnR3(activeId);
+        this.updateR3LivesUI(); this.broadcastTurnR3(activeId); this.syncState();
     }
 
     broadcastTurnR3(activeId) {
@@ -738,55 +867,46 @@ class HachaEngine {
         else { AudioEngine.correct(); confetti({ origin: { y: 0.8 }, colors: ['#22c55e'] }); }
         
         this.r3TurnIdx = (this.r3TurnIdx + 1) % this.r3Order.length;
-        this.updateR3LivesUI(); setTimeout(() => this.nextR3Question(), 1500);
+        this.updateR3LivesUI(); this.syncState(); setTimeout(() => this.nextR3Question(), 1500);
     }
 
     updateR3LivesUI() {
         document.getElementById('r3-lives-display').innerHTML = this.r3Order.map(id => {
             const p = this.players[id];
-            return `<div class="player-life-card ${id === this.currentAnswererId ? 'active-turn' : ''} ${p.eliminated ? 'eliminated' : ''}"><div style="font-weight:900; margin-bottom:5px;">${p.name}</div><div class="heart">${'❤️'.repeat(p.lives)}</div></div>`;
+            return `<div class="player-life-card ${id === this.currentAnswererId ? 'active-turn' : ''} ${p.eliminated ? 'eliminated' : ''}" style="border-top:4px solid ${p.color};"><div style="font-weight:900; margin-bottom:5px;">${p.avatar} ${p.name}</div><div class="heart">${'❤️'.repeat(p.lives)}</div></div>`;
         }).join('');
     }
 
-    // --- RONDA 4: LA GRAN FINAL CON REBOTE ---
+    // --- RONDA 4: LA GRAN FINAL ---
     startRound4Intro() {
         this.phase = 4;
         const sorted = Object.values(this.players).sort((a,b) => b.score - a.score);
         this.r4Finalists = [sorted[0].id, sorted[1].id];
         this.r4TurnIdx = 0; 
-        this.broadcast({ type: 'phase', phase: 4 });
+        this.broadcast({ type: 'phase', phase: 4 }); this.syncState();
         this.show('screen-r4-intro');
     }
 
-    startRound4() {
-        this.show('screen-r4-game');
-        this.updateR4HostUI();
-        this.broadcastR4State();
-    }
+    startRound4() { this.show('screen-r4-game'); this.updateR4HostUI(); this.broadcastR4State(); }
 
     updateR4HostUI() {
         document.getElementById('r4-category-selection').style.display = 'block';
         document.getElementById('r4-question-panel').style.display = 'none';
-        const p1 = this.players[this.r4Finalists[0]];
-        const p2 = this.players[this.r4Finalists[1]];
+        const p1 = this.players[this.r4Finalists[0]]; const p2 = this.players[this.r4Finalists[1]];
         const activeId = this.r4Finalists[this.r4TurnIdx];
 
         document.getElementById('r4-finalists-container').innerHTML = `
-            <div class="finalist-card ${activeId === p1.id ? 'active-turn' : ''}">
-                <div style="font-size:1.8rem; font-weight:900; margin-bottom:15px; color: ${activeId === p1.id ? 'var(--primary)' : 'white'};">${p1.name}</div>
+            <div class="finalist-card ${activeId === p1.id ? 'active-turn' : ''}" style="border-color:${p1.color};">
+                <div style="font-size:1.8rem; font-weight:900; margin-bottom:15px; color: ${activeId === p1.id ? 'white' : '#94a3b8'};">${p1.avatar} ${p1.name}</div>
                 <div class="quesito-container">${this.renderQuesitos(p1.quesitos)}</div>
             </div>
-            <div class="finalist-card ${activeId === p2.id ? 'active-turn' : ''}">
-                <div style="font-size:1.8rem; font-weight:900; margin-bottom:15px; color: ${activeId === p2.id ? 'var(--primary)' : 'white'};">${p2.name}</div>
+            <div class="finalist-card ${activeId === p2.id ? 'active-turn' : ''}" style="border-color:${p2.color};">
+                <div style="font-size:1.8rem; font-weight:900; margin-bottom:15px; color: ${activeId === p2.id ? 'white' : '#94a3b8'};">${p2.avatar} ${p2.name}</div>
                 <div class="quesito-container">${this.renderQuesitos(p2.quesitos)}</div>
             </div>
         `;
-        
         const activePlayer = this.players[activeId];
-        document.querySelectorAll('.btn-cat').forEach(btn => {
-            const catName = btn.innerText;
-            btn.disabled = activePlayer.quesitos.includes(catName);
-        });
+        document.querySelectorAll('.btn-cat').forEach(btn => { btn.disabled = activePlayer.quesitos.includes(btn.innerText); });
     }
 
     renderQuesitos(arr) {
@@ -801,35 +921,21 @@ class HachaEngine {
     generateR4Question(category) {
         this.r4CurrentCat = category;
         const q = this.getSafeQuestion(3, 2, category); 
+        this.syncState();
 
-        document.getElementById('r4-category-selection').style.display = 'none';
-        document.getElementById('r4-question-panel').style.display = 'block';
+        document.getElementById('r4-category-selection').style.display = 'none'; document.getElementById('r4-question-panel').style.display = 'block';
+        const badge = document.getElementById('r4-q-cat'); badge.className = `cat-badge ${CAT_CLASSES[category]}`; badge.innerText = category;
         
-        const badge = document.getElementById('r4-q-cat');
-        badge.className = `cat-badge ${CAT_CLASSES[category]}`;
-        badge.innerText = category;
+        document.getElementById('r4-q-text').innerText = q.q; document.getElementById('r4-q-answer').innerText = q.a; document.getElementById('r4-q-answer').classList.add('blur-mode');
         
-        document.getElementById('r4-q-text').innerText = q.q;
-        document.getElementById('r4-q-answer').innerText = q.a;
-        document.getElementById('r4-q-answer').classList.add('blur-mode');
-        
-        document.getElementById('btn-r4-timer').style.display = 'block';
-        document.getElementById('r4-timer-display').style.display = 'none';
-        
-        document.getElementById('r4-controls-judge').style.display = 'none';
-        document.getElementById('r4-controls-rebound').style.display = 'none'; // Asegura ocultar rebote
-        
-        document.getElementById('btn-r4-reveal').style.display = 'block';
-        document.getElementById('r4-judge-buttons').style.display = 'none';
+        document.getElementById('btn-r4-timer').style.display = 'block'; document.getElementById('r4-timer-display').style.display = 'none';
+        document.getElementById('r4-controls-judge').style.display = 'none'; document.getElementById('r4-controls-rebound').style.display = 'none';
+        document.getElementById('btn-r4-reveal').style.display = 'block'; document.getElementById('r4-judge-buttons').style.display = 'none';
     }
 
     startR4Timer() {
-        document.getElementById('btn-r4-timer').style.display = 'none';
-        document.getElementById('r4-timer-display').style.display = 'block';
-        document.getElementById('r4-controls-judge').style.display = 'block';
-        
-        let t = 15;
-        document.getElementById('r4-timer-display').innerText = t;
+        document.getElementById('btn-r4-timer').style.display = 'none'; document.getElementById('r4-timer-display').style.display = 'block'; document.getElementById('r4-controls-judge').style.display = 'block';
+        let t = 15; document.getElementById('r4-timer-display').innerText = t;
         
         if(this.r4Interval) clearInterval(this.r4Interval);
         this.r4Interval = setInterval(() => {
@@ -842,107 +948,74 @@ class HachaEngine {
     toggleAnswerR4() {
         if(this.r4Interval) clearInterval(this.r4Interval); 
         document.getElementById('r4-q-answer').classList.remove('blur-mode');
-        document.getElementById('btn-r4-reveal').style.display = 'none';
-        document.getElementById('r4-judge-buttons').style.display = 'flex';
+        document.getElementById('btn-r4-reveal').style.display = 'none'; document.getElementById('r4-judge-buttons').style.display = 'flex';
     }
 
     judgeR4(ok) {
-        const activeId = this.r4Finalists[this.r4TurnIdx];
-        const p = this.players[activeId];
-        
+        const activeId = this.r4Finalists[this.r4TurnIdx]; const p = this.players[activeId];
         if (ok) {
-            p.quesitos.push(this.r4CurrentCat);
-            AudioEngine.correct(); confetti({ origin: { y: 0.8 } });
-            if(p.quesitos.length >= 6) return this.triggerVictory(p.name);
-            
-            // Acierta y conserva turno
-            this.updateR4HostUI(); this.broadcastR4State();
+            p.quesitos.push(this.r4CurrentCat); AudioEngine.correct(); confetti({ origin: { y: 0.8 } });
+            if(p.quesitos.length >= 6) return this.triggerVictory(p.name, p.avatar);
+            this.syncState(); this.updateR4HostUI(); this.broadcastR4State();
         } else {
             AudioEngine.wrong();
-            
-            // FALLO: INICIA EL REBOTE AL RIVAL
-            document.getElementById('r4-judge-buttons').style.display = 'none';
-            document.getElementById('r4-controls-rebound').style.display = 'block';
-            
+            document.getElementById('r4-judge-buttons').style.display = 'none'; document.getElementById('r4-controls-rebound').style.display = 'block';
             this.broadcastR4ReboundState();
         }
     }
 
     judgeR4Rebound(ok) {
-        const inactiveIdx = (this.r4TurnIdx === 0) ? 1 : 0;
-        const rivalId = this.r4Finalists[inactiveIdx];
-        const rival = this.players[rivalId];
-        
+        const inactiveIdx = (this.r4TurnIdx === 0) ? 1 : 0; const rivalId = this.r4Finalists[inactiveIdx]; const rival = this.players[rivalId];
         if (ok) {
             AudioEngine.correct();
-            // Roba quesito si no lo tenía ya
             if(!rival.quesitos.includes(this.r4CurrentCat)) {
-                rival.quesitos.push(this.r4CurrentCat);
-                confetti({ origin: { y: 0.8 }, colors:['#ef4444', '#facc15'] });
-                if(rival.quesitos.length >= 6) return this.triggerVictory(rival.name);
+                rival.quesitos.push(this.r4CurrentCat); confetti({ origin: { y: 0.8 }, colors:['#ef4444', '#facc15'] });
+                if(rival.quesitos.length >= 6) return this.triggerVictory(rival.name, rival.avatar);
             }
-        } else {
-            AudioEngine.wrong();
-        }
+        } else { AudioEngine.wrong(); }
         
-        // Pase lo que pase en el rebote, el turno es ahora del rival
-        this.r4TurnIdx = inactiveIdx;
-        this.updateR4HostUI(); 
-        this.broadcastR4State();
+        this.r4TurnIdx = inactiveIdx; this.syncState(); this.updateR4HostUI(); this.broadcastR4State();
     }
 
-    triggerVictory(winnerName) {
+    triggerVictory(winnerName, avatar) {
         AudioEngine.win();
-        document.getElementById('r4-question-panel').innerHTML = `<h1 style="color:var(--success); font-size:6rem; margin-top:50px;">¡CAMPEÓN ABSOLUTO!</h1><h2 style="font-size:5rem; color:white; text-shadow: 0 0 30px white;">${winnerName}</h2>`;
+        document.getElementById('r4-question-panel').innerHTML = `<h1 style="color:var(--success); font-size:6rem; margin-top:50px;">¡CAMPEÓN ABSOLUTO!</h1><h2 style="font-size:6rem; color:white; text-shadow: 0 0 30px white;">${avatar} ${winnerName}</h2>`;
         confetti({ particleCount: 300, spread: 160 });
-        this.broadcast({ type: 'r4-victory', winner: winnerName });
+        this.broadcast({ type: 'r4-victory', winner: winnerName, avatar: avatar });
     }
 
     broadcastR4State() {
         Object.values(this.connections).forEach(c => {
-            const p = this.players[c.peer];
-            const isFinalist = this.r4Finalists.includes(c.peer);
-            const isMyTurn = c.peer === this.r4Finalists[this.r4TurnIdx];
-            const activeName = this.players[this.r4Finalists[this.r4TurnIdx]].name;
+            const p = this.players[c.peer]; const isFinalist = this.r4Finalists.includes(c.peer);
+            const isMyTurn = c.peer === this.r4Finalists[this.r4TurnIdx]; const activeName = this.players[this.r4Finalists[this.r4TurnIdx]].name;
             
             let msg = "";
-            if(!isFinalist) msg = `ESPECTADOR. Turno de ${activeName}`;
+            if(!isFinalist) msg = `SABOTEADOR. Turno de ${activeName}`;
             else if(isMyTurn) msg = `<span style="color:var(--success);">¡TU TURNO! (Elige categoría)</span>`;
             else msg = `Turno de ${activeName}.`;
-
             c.send({ type: 'r4-update', isFinalist: isFinalist, msg: msg, myQuesitos: p.quesitos || [] });
         });
     }
 
     broadcastR4ReboundState() {
-        const inactiveIdx = (this.r4TurnIdx === 0) ? 1 : 0;
-        const rivalId = this.r4Finalists[inactiveIdx];
-
+        const inactiveIdx = (this.r4TurnIdx === 0) ? 1 : 0; const rivalId = this.r4Finalists[inactiveIdx];
         Object.values(this.connections).forEach(c => {
-            const p = this.players[c.peer];
-            const isFinalist = this.r4Finalists.includes(c.peer);
-            
+            const p = this.players[c.peer]; const isFinalist = this.r4Finalists.includes(c.peer);
             let msg = "";
-            if(!isFinalist) {
-                msg = `¡REBOTE! Turno de ${this.players[rivalId].name}`;
-            } else if(c.peer === rivalId) {
-                msg = `<span style="color:var(--danger); animation: pulseCD 1s infinite;">¡REBOTE! RESPONDE TÚ</span>`;
-                if(navigator.vibrate) navigator.vibrate([200,100,200]);
-            } else {
-                msg = `Has fallado. Rebote para tu rival.`;
-            }
-
+            if(!isFinalist) { msg = `¡REBOTE! Turno de ${this.players[rivalId].name}`; } 
+            else if(c.peer === rivalId) { msg = `<span style="color:var(--danger); animation: pulseCD 1s infinite;">¡REBOTE! RESPONDE TÚ</span>`; if(navigator.vibrate) navigator.vibrate([200,100,200]); } 
+            else { msg = `Has fallado. Rebote para tu rival.`; }
             c.send({ type: 'r4-update', isFinalist: isFinalist, msg: msg, myQuesitos: p.quesitos || [] });
         });
     }
 
     updateScoreboard() {
         const sorted = Object.values(this.players).sort((a,b)=>b.score-a.score);
-        document.getElementById('score-list').innerHTML = sorted.map(p => `<div class="score-row-host" onclick="app.openReferee('${p.id}')"><span>${p.name}</span><span style="color:var(--primary);">${p.score}</span></div>`).join('');
+        document.getElementById('score-list').innerHTML = sorted.map(p => `<div class="score-row-host" onclick="app.openReferee('${p.id}')"><span>${p.avatar} ${p.name}</span><span style="color:var(--primary);">${p.score}</span></div>`).join('');
         Object.values(this.connections).forEach(c => c.send({ type: 'scoreUpdate', score: this.players[c.peer]?.score || 0 }));
     }
 
-    // --- CLIENTE ---
+    // --- CLIENTE (MÓVIL) ---
     joinGame() {
         AudioEngine.init();
         const c = document.getElementById('join-code').value.toUpperCase().trim();
@@ -961,8 +1034,7 @@ class HachaEngine {
             }, 5000);
 
             conn.on('open', () => { 
-                clearTimeout(timeoutId); this.conn = conn; 
-                conn.send({type:'join', name:n}); this.show('screen-controller'); 
+                clearTimeout(timeoutId); this.conn = conn; conn.send({type:'join', name:n}); this.show('screen-controller'); 
             });
             conn.on('data', d => this.handleClientData(d));
             conn.on('error', () => { alert("Error de red."); btn.innerText = "¡ENTRAR!"; btn.disabled = false; });
@@ -971,23 +1043,28 @@ class HachaEngine {
     }
 
     handleClientData(d) {
+        if(d.type==='joined_ok') {
+            document.getElementById('my-avatar').innerText = d.avatar;
+            document.getElementById('buzzer').style.background = `radial-gradient(circle at 30% 30%, ${d.color}, #000)`;
+        }
         if(d.type==='phase'){ 
-            if(d.phase === 2) {
-                document.getElementById('ctrl-standard').style.display = 'none';
-                document.getElementById('ctrl-r2').style.display = 'flex';
-            }
-            if(d.phase === 3) {
-                document.getElementById('ctrl-r2').style.display = 'none';
-                document.getElementById('ctrl-standard').style.display = 'flex';
-                document.getElementById('r3-lives-mobile').style.display = 'block'; 
-            }
+            if(d.phase === 2) { document.getElementById('ctrl-standard').style.display = 'none'; document.getElementById('ctrl-r2').style.display = 'flex'; }
+            if(d.phase === 3) { document.getElementById('ctrl-r2').style.display = 'none'; document.getElementById('ctrl-standard').style.display = 'flex'; document.getElementById('r3-lives-mobile').style.display = 'block'; }
             if(d.phase === 4) { document.getElementById('ctrl-standard').style.display = 'none'; document.getElementById('ctrl-spectator').style.display = 'none'; document.getElementById('ctrl-r4').style.display = 'flex'; }
         }
         if(d.type==='r2-data') {
             document.getElementById('r2-mobile-data').innerText = d.text;
             document.getElementById('r2-tool-math').style.display = d.isMath ? 'block' : 'none';
             document.getElementById('r2-tool-lex').style.display = !d.isMath ? 'block' : 'none';
-            this.calcStr = ""; document.getElementById('calc-display').value = ""; 
+            this.calcStr = ""; document.getElementById('calc-display').value = ""; document.getElementById('r2-lex-input').value = "";
+            document.getElementById('btn-r2-submit-lex').disabled = true; document.getElementById('btn-r2-submit-math').disabled = true;
+        }
+        if(d.type==='r2-unlock') {
+            document.getElementById('btn-r2-submit-lex').disabled = false; document.getElementById('btn-r2-submit-lex').innerText = "ENVIAR PALABRA";
+            document.getElementById('btn-r2-submit-math').disabled = false; document.getElementById('btn-r2-submit-math').innerText = "ENVIAR CIFRA";
+        }
+        if(d.type==='r2-lock') {
+            document.getElementById('btn-r2-submit-lex').disabled = true; document.getElementById('btn-r2-submit-math').disabled = true;
         }
         if(d.type==='r2-timer') { document.getElementById('r2-mobile-timer').innerText = d.val; }
         if(d.type==='r3-update'){
@@ -1009,10 +1086,10 @@ class HachaEngine {
                     const shadow = d.myQuesitos.includes(cat) ? `box-shadow: 0 0 10px ${color}; border-color: ${color};` : '';
                     return `<div class="quesito" style="background:${color}; ${shadow}"></div>`;
                 }).join('');
-            } else { document.getElementById('r4-my-quesitos').innerHTML = "<p>MODO ESPECTADOR</p>"; }
+            } else { document.getElementById('ctrl-r4').style.display = 'none'; document.getElementById('ctrl-spectator').style.display = 'flex'; }
         }
         if(d.type==='r4-victory'){
-            document.getElementById('r4-mobile-msg').innerHTML = `<div style="font-size:3.5rem; color:var(--success); font-weight:900;">🏆 CAMPEÓN:<br>${d.winner}</div>`;
+            document.getElementById('r4-mobile-msg').innerHTML = `<div style="font-size:3.5rem; color:var(--success); font-weight:900;">🏆 CAMPEÓN:<br>${d.avatar} ${d.winner}</div>`;
             if(navigator.vibrate) navigator.vibrate([500,200,500]);
         }
         if(d.type==='countdown'){ document.getElementById('countdown-layer').style.display = 'flex'; document.getElementById('cd-num').innerText = d.val; if(d.val==="YA!") setTimeout(()=> document.getElementById('countdown-layer').style.display = 'none', 800); }
@@ -1022,15 +1099,16 @@ class HachaEngine {
     c(val) {
         const d = document.getElementById('calc-display');
         if(val === 'C') { this.calcStr = ""; }
-        else if(val === '=') { 
-            try { this.calcStr = eval(this.calcStr).toString(); } 
-            catch(e) { this.calcStr = "Error"; setTimeout(()=>{this.calcStr=""; d.value="";}, 1000); }
-        }
+        else if(val === '=') { try { this.calcStr = eval(this.calcStr).toString(); } catch(e) { this.calcStr = "Error"; setTimeout(()=>{this.calcStr=""; d.value="";}, 1000); } }
         else { this.calcStr += val; }
         d.value = this.calcStr;
     }
 
     buzz() { if(this.conn) { this.conn.send({type:'buzz'}); if(navigator.vibrate) navigator.vibrate(50); } }
+    sendReaction(emoji) { if(this.conn) { this.conn.send({type:'reaction', emoji: emoji}); if(navigator.vibrate) navigator.vibrate(20); } }
+    submitR2Lex() { const val = document.getElementById('r2-lex-input').value.toUpperCase(); if(!val) return; this.conn.send({type:'r2_submit', val: val}); document.getElementById('btn-r2-submit-lex').disabled = true; document.getElementById('btn-r2-submit-lex').innerText = "¡ENVIADO!"; }
+    submitR2Math() { const val = document.getElementById('calc-display').value; if(!val) return; this.conn.send({type:'r2_submit', val: val}); document.getElementById('btn-r2-submit-math').disabled = true; document.getElementById('btn-r2-submit-math').innerText = "¡ENVIADO!"; }
+    
     showOverlay(v) { document.getElementById('countdown-layer').style.display = 'flex'; document.getElementById('cd-num').innerText = v; }
     hideOverlay() { document.getElementById('countdown-layer').style.display = 'none'; }
     broadcast(m) { Object.values(this.connections).forEach(c => c.send(m)); }
