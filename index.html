@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HACHA 🪓 | V13.2 CLEAN ARCHITECTURE</title>
+<title>HACHA 🪓 | V13.3 BUGFIX EDITION</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -69,7 +69,14 @@
         <div id="q-text" class="question-text">...</div>
         <div id="q-answer" class="answer-text blur-mode">...</div>
         <div id="r1-controls-reading"><button class="btn reveal" onclick="app.toggleAnswer()">👁️ VER</button><button class="btn blue" onclick="app.startCountdown()">⏱️ CUENTA</button></div>
-        <div id="r1-controls-judging" style="display:none;"><div id="answering-name">...</div><button class="btn reveal" onclick="app.confirmReveal()">👁️ DESVELAR</button><div id="judge-buttons" style="display:none;"><button class="btn green" onclick="app.judge(true)">✅</button><button class="btn red" onclick="app.judge(false)">❌</button></div></div>
+        <div id="r1-controls-judging" style="display:none;">
+            <div id="answering-name">...</div>
+            <button class="btn reveal" id="btn-reveal-judge" onclick="app.confirmReveal()">👁️ DESVELAR</button>
+            <div id="judge-buttons" style="display:none; gap:15px; justify-content:center;">
+                <button class="btn green" onclick="app.judge(true)">✅</button>
+                <button class="btn red" onclick="app.judge(false)">❌</button>
+            </div>
+        </div>
         <div id="r1-controls-next" style="display:none;"><button class="btn" onclick="app.nextQuestion()">SIGUIENTE</button></div>
     </div>
 </div>
@@ -119,7 +126,21 @@
 </div>
 
 <div id="screen-r3-game" class="screen">
-    <div class="card"><h2 style="color:var(--success)">SUPERVIVENCIA</h2><div id="r3-q-cat" class="cat-badge">...</div><div id="r3-q-text" class="question-text">...</div><div id="r3-q-answer" class="answer-text blur-mode">...</div><div id="r3-lives-display" class="lives-container"></div><div id="r3-controls-reading" style="margin-top:20px;"><button class="btn reveal" onclick="app.toggleAnswerR3()">👁️ VER</button><button class="btn green" onclick="app.confirmRevealR3()">🔓 ABRIR</button></div><div id="r3-controls-judging" style="display:none; margin-top:20px;"><button class="btn reveal" id="btn-reveal-judge-r3" onclick="app.showJudgeButtonsR3()">👁️ JUZGAR</button><div id="r3-judge-buttons" style="display:none;"><button class="btn green" onclick="app.judgeR3(true)">✅</button><button class="btn red" onclick="app.judgeR3(false)">❌</button></div></div></div>
+    <div class="card">
+        <h2 style="color:var(--success)">SUPERVIVENCIA</h2>
+        <div id="r3-q-cat" class="cat-badge">...</div>
+        <div id="r3-q-text" class="question-text">...</div>
+        <div id="r3-q-answer" class="answer-text blur-mode">...</div>
+        <div id="r3-lives-display" class="lives-container"></div>
+        <div id="r3-controls-reading" style="margin-top:20px;"><button class="btn reveal" onclick="app.toggleAnswerR3()">👁️ VER</button><button class="btn green" onclick="app.confirmRevealR3()">🔓 ABRIR</button></div>
+        <div id="r3-controls-judging" style="display:none; margin-top:20px;">
+            <button class="btn reveal" id="btn-reveal-judge-r3" onclick="app.showJudgeButtonsR3()">👁️ JUZGAR</button>
+            <div id="r3-judge-buttons" style="display:none; gap:15px; justify-content:center;">
+                <button class="btn green" onclick="app.judgeR3(true)">✅</button>
+                <button class="btn red" onclick="app.judgeR3(false)">❌</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="screen-r4-intro" class="screen">
@@ -146,9 +167,7 @@
         
         <div id="r4-question-panel" style="display:none;">
             <div id="r4-q-cat" class="cat-badge">...</div><div id="r4-q-text" class="question-text">...</div><div id="r4-q-answer" class="answer-text blur-mode">...</div>
-            
             <div id="r4-wildcard-answers" class="wildcard-box" style="display:none;"></div>
-            
             <div id="r4-timer-display" class="timer-big" style="display:none;">15</div>
             
             <div id="r4-timer-controls" style="display:flex; justify-content:center; gap:15px; margin-top: 15px;">
@@ -156,7 +175,13 @@
                 <button id="btn-r4-wildcard" class="btn" style="background:var(--info); display:none;" onclick="app.useR4Wildcard()">🆘 COMODÍN PÚBLICO (25s)</button>
             </div>
             
-            <div id="r4-controls-judge" style="display:none; margin-top:20px;"><button class="btn reveal" onclick="app.toggleAnswerR4()">👁️ JUZGAR</button><div id="r4-judge-buttons" style="display:none;"><button class="btn green" onclick="app.judgeR4(true)">✅ ACERTÓ (GANA COLOR)</button><button class="btn red" onclick="app.judgeR4(false)">❌ FALLÓ (REBOTE)</button></div></div>
+            <div id="r4-controls-judge" style="display:none; margin-top:20px;">
+                <button class="btn reveal" id="btn-r4-reveal" onclick="app.toggleAnswerR4()">👁️ JUZGAR</button>
+                <div id="r4-judge-buttons" style="display:none; gap:15px; justify-content:center;">
+                    <button class="btn green" onclick="app.judgeR4(true)">✅ ACERTÓ (GANA COLOR)</button>
+                    <button class="btn red" onclick="app.judgeR4(false)">❌ FALLÓ (REBOTE)</button>
+                </div>
+            </div>
             <div id="r4-controls-rebound" style="display:none; margin-top:20px;"><button class="btn green" onclick="app.judgeR4Rebound(true)">✅ RIVAL ROBA</button><button class="btn grey" onclick="app.judgeR4Rebound(false)">❌ NADIE ACIERTA</button></div>
         </div>
     </div>
@@ -180,7 +205,7 @@
     
     <div id="ctrl-standard" style="margin-top: 80px;"><div id="msg-box" style="color:white; font-weight:900; text-align:center;">ESPERANDO...</div><button id="buzzer" class="buzzer-btn disabled" onclick="app.buzz()">BUZZ</button></div>
     
-    <div id="ctrl-r2" style="display:none; margin-top: 50px; width: 100%; max-width: 500px;"><div id="r2-mobile-timer" class="timer-big" style="font-size:4.5rem; margin-bottom:5px;">30</div><div id="r2-mobile-data" style="color:white; text-align:center; padding:15px; background:#1e293b; border-radius:15px; margin-bottom:15px;">...</div>
+    <div id="ctrl-r2" style="display:none; margin-top: 50px; width: 100%; max-width: 500px;"><div id="r2-mobile-timer" class="timer-big" style="font-size:4.5rem; margin-bottom:5px;">45</div><div id="r2-mobile-data" style="color:white; text-align:center; padding:15px; background:#1e293b; border-radius:15px; margin-bottom:15px;">...</div>
         <div id="r2-tool-lex" style="display:none;"><input type="text" id="r2-lex-input" class="game-input" placeholder="Palabra..."><button class="btn green" id="btn-r2-submit-lex" onclick="app.submitR2Lex()" style="width:100%">ENVIAR</button></div>
         <div id="r2-tool-math" style="display:none;"><input type="text" id="calc-display" class="game-input" disabled placeholder="0"><div class="calc-grid"><button class="calc-btn" onclick="app.c('7')">7</button><button class="calc-btn" onclick="app.c('8')">8</button><button class="calc-btn" onclick="app.c('9')">9</button><button class="calc-btn op" onclick="app.c('/')">/</button><button class="calc-btn" onclick="app.c('4')">4</button><button class="calc-btn" onclick="app.c('5')">5</button><button class="calc-btn" onclick="app.c('6')">6</button><button class="calc-btn op" onclick="app.c('*')">*</button><button class="calc-btn" onclick="app.c('1')">1</button><button class="calc-btn" onclick="app.c('2')">2</button><button class="calc-btn" onclick="app.c('3')">3</button><button class="calc-btn op" onclick="app.c('-')">-</button><button class="calc-btn clear" onclick="app.c('C')">C</button><button class="calc-btn" onclick="app.c('0')">0</button><button class="calc-btn op" onclick="app.c('=')">=</button><button class="calc-btn op" onclick="app.c('+')">+</button></div><button class="btn green" id="btn-r2-submit-math" onclick="app.submitR2Math()" style="width:100%; margin-top:10px;">ENVIAR</button></div>
     </div>
@@ -202,7 +227,7 @@
 </div>
 
 <script>
-// --- LÓGICA DE JUEGO (JAVASCRIPT) ---
+// --- LÓGICA DE JUEGO ---
 const AVATAR_LIST = ['🦊','🦁','🐷','🐸','🐵','🐲','🦄','👽','🤖','🐼','🐻','🐨','🐯','🐮','🐶'];
 const PLAYER_COLORS = ['#ef4444','#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#f97316'];
 const CAT_COLORS = { "Geografía": "#3b82f6", "Arte y Literatura": "#a16207", "Historia": "#eab308", "Entretenimiento": "#ec4899", "Ciencias y Naturaleza": "#22c55e", "Deportes": "#f97316" };
@@ -308,7 +333,15 @@ class HachaEngine {
     }
     startCountdown() { document.getElementById('r1-controls-reading').style.display='none'; let c=3; this.showOverlay(c); this.broadcast({type:'countdown', val:c}); AudioEngine.tick(); const t=setInterval(()=>{ c--; if(c>0){this.showOverlay(c); this.broadcast({type:'countdown', val:c}); AudioEngine.tick();} else {clearInterval(t); this.showOverlay("YA!"); this.broadcast({type:'countdown', val:"YA!"}); setTimeout(()=>{this.hideOverlay(); this.unlockBuzzers();}, 800); } }, 1000); }
     unlockBuzzers() { this.buzzerLocked=false; this.broadcast({type:'status', msg:'¡PULSA!', color:'red', locked:false}); if(this.r1Timeout) clearTimeout(this.r1Timeout); this.r1Timeout=setTimeout(()=>{ if(!this.buzzerLocked){ const ids=Object.keys(this.players); if(ids.length>0){ const v=ids[Math.floor(Math.random()*ids.length)]; this.showOverlay("¡TIEMPO!"); AudioEngine.wrong(); setTimeout(()=>{this.hideOverlay(); this.handleBuzz(v);}, 1500); } } }, 15000); }
-    handleBuzz(id) { if(this.buzzerLocked) return; this.buzzerLocked=true; this.currentAnswererId=id; if(this.r1Timeout) clearTimeout(this.r1Timeout); AudioEngine.buzz(); document.getElementById('r1-controls-judging').style.display='block'; const p=this.players[id]; document.getElementById('answering-name').innerHTML=`<span style="font-size:2rem">${p.avatar}</span> <span style="color:${p.color}">${p.name}</span>`; document.getElementById('btn-reveal-judge').style.display='block'; document.getElementById('judge-buttons').style.display='none'; Object.values(this.connections).forEach(c => { if(c.peer===id) c.send({type:'status', msg:'¡TU TURNO!', color:'orange', locked:true}); else c.send({type:'status', msg:`${p.name} RESPONDE`, color:'grey', locked:true}); }); }
+    handleBuzz(id) { 
+        if(this.buzzerLocked) return; this.buzzerLocked=true; this.currentAnswererId=id; if(this.r1Timeout) clearTimeout(this.r1Timeout); AudioEngine.buzz(); 
+        document.getElementById('r1-controls-judging').style.display='block'; 
+        const p=this.players[id]; 
+        document.getElementById('answering-name').innerHTML=`<span style="font-size:2rem">${p.avatar}</span> <span style="color:${p.color}">${p.name}</span>`; 
+        document.getElementById('btn-reveal-judge').style.display='block'; 
+        document.getElementById('judge-buttons').style.display='none'; 
+        Object.values(this.connections).forEach(c => { if(c.peer===id) c.send({type:'status', msg:'¡TU TURNO!', color:'orange', locked:true}); else c.send({type:'status', msg:`${p.name} RESPONDE`, color:'grey', locked:true}); }); 
+    }
     confirmReveal() { document.getElementById('q-answer').classList.remove('blur-mode'); document.getElementById('btn-reveal-judge').style.display='none'; document.getElementById('judge-buttons').style.display='flex'; }
     judge(ok) { const p=this.players[this.currentAnswererId]; const pts=(this.r1Idx>=8)?2:1; if(ok){p.score+=pts; AudioEngine.correct();} else {p.score-=pts; AudioEngine.wrong();} this.updateScoreboard(); this.sync(); this.finishQ(); }
     finishQ() { document.getElementById('q-answer').classList.remove('blur-mode'); document.getElementById('r1-controls-judging').style.display='none'; document.getElementById('r1-controls-next').style.display='block'; this.broadcast({type:'status', msg:'ESPERA...', locked:true}); }
@@ -373,6 +406,7 @@ class HachaEngine {
         if(d.type==='r4-update') { document.getElementById('r4-mobile-msg').innerHTML = d.msg; document.getElementById('spectator-wildcard').style.display = 'none'; document.getElementById('spectator-sabotage').style.display = 'block'; if(d.isFinalist) { document.getElementById('r4-my-quesitos').innerHTML = Object.keys(CAT_COLORS).map(cat => { const c = d.myQuesitos.includes(cat) ? CAT_COLORS[cat] : '#1e293b'; return `<div class="quesito" style="background:${c};"></div>`; }).join(''); } else { document.getElementById('ctrl-r4').style.display='none'; document.getElementById('ctrl-spectator').style.display='flex'; } }
         if(d.type==='r4-wildcard-trigger') { if(!d.isFinalist) { document.getElementById('spectator-sabotage').style.display = 'none'; document.getElementById('spectator-wildcard').style.display = 'block'; document.getElementById('r4-wildcard-input').value = ""; document.getElementById('btn-r4-submit-wildcard').disabled = false; document.getElementById('btn-r4-submit-wildcard').innerText = "ENVIAR RESPUESTA"; if(navigator.vibrate) navigator.vibrate([200,100,200]); } else if (d.isMyTurn) { document.getElementById('r4-mobile-msg').innerHTML = `<span style="color:var(--info);">🆘 ¡ESCUCHA AL PÚBLICO!</span>`; } else { document.getElementById('r4-mobile-msg').innerHTML = `Turno de ${d.name}. (Comodín)`; } }
         if(d.type==='r4-wildcard-end') { document.getElementById('spectator-wildcard').style.display = 'none'; document.getElementById('spectator-sabotage').style.display = 'block'; }
+
         if(d.type==='r4-victory') { document.getElementById('r4-mobile-msg').innerHTML = `<div style="font-size:3.5rem; color:var(--success); font-weight:900;">🏆 CAMPEÓN:<br>${d.avatar} ${d.winner}</div>`; if(navigator.vibrate) navigator.vibrate([500,200,500]); }
         if(d.type==='countdown') { document.getElementById('countdown-layer').style.display='flex'; document.getElementById('cd-num').innerText=d.val; if(d.val==="YA!") setTimeout(()=>document.getElementById('countdown-layer').style.display='none',800); }
         if(d.type==='scoreUpdate') { document.getElementById('my-score').innerText = d.score + " PTS"; }
@@ -384,6 +418,7 @@ class HachaEngine {
     submitR2Math() { const v=document.getElementById('calc-display').value; if(!v) return; this.conn.send({type:'r2_submit', val:v}); document.getElementById('btn-r2-submit-math').disabled=true; }
     submitWildcard() { const v = document.getElementById('r4-wildcard-input').value.toUpperCase(); if(!v) return; this.conn.send({type:'r4_wildcard_submit', val: v}); document.getElementById('btn-r4-submit-wildcard').disabled = true; document.getElementById('btn-r4-submit-wildcard').innerText = "¡ENVIADO!"; }
     showOverlay(v) { document.getElementById('countdown-layer').style.display='flex'; document.getElementById('cd-num').innerText=v; } hideOverlay() { document.getElementById('countdown-layer').style.display='none'; }
+    broadcast(m) { Object.values(this.connections).forEach(c => c.send(m)); }
 }
 
 const app = new HachaEngine();
