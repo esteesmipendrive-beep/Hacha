@@ -1,4 +1,4 @@
-/* --- HACHA V12.0 | HOJA DE ESTILOS PRINCIPAL --- */
+/* --- HACHA V13.2 | THE SHOW EDITION --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
 
@@ -37,7 +37,8 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .btn.red { background: var(--danger); box-shadow: 0 8px 0 var(--danger-dark); }
 .btn.blue { background: var(--info); box-shadow: 0 8px 0 var(--info-dark); }
 .btn.reveal { background: var(--violet); box-shadow: 0 8px 0 #5b21b6; }
-.btn.small { padding: 10px 20px; font-size: 1rem; }
+.btn.grey { background: #475569; box-shadow: 0 8px 0 #1e293b; }
+.btn.small { padding: 10px 20px; font-size: 1rem; margin: 0; }
 
 .cat-badge { display: inline-block; padding: 10px 25px; border-radius: 30px; font-size: 1.2rem; font-weight: 900; color: white; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.5); letter-spacing: 2px; }
 .cat-geo { background: linear-gradient(135deg, #2563eb, #1d4ed8); } 
@@ -50,7 +51,7 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .question-text { font-size: 2.8rem; line-height: 1.4; margin: 30px 0; font-weight: 900; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
 .answer-text { font-size: 2.2rem; color: #facc15; font-weight: 900; margin: 30px 0; padding: 20px; background: rgba(250, 204, 21, 0.05); border-radius: 16px; border: 3px dashed rgba(250, 204, 21, 0.5); transition: filter 0.3s; }
 .blur-mode { filter: blur(20px); opacity: 0.1; }
-.timer-big { font-size: 8rem; font-weight: 900; color: var(--danger); margin: 10px 0; text-shadow: 0 0 30px rgba(244, 63, 94, 0.5); }
+.timer-big { font-size: 8rem; font-weight: 900; color: var(--danger); margin: 10px 0; text-shadow: 0 0 30px rgba(244, 63, 94, 0.5); transition: 0.3s; }
 
 .tiles-container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
 .tile { width: 80px; height: 90px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; font-size: 3rem; font-weight: 900; display: flex; align-items: center; justify-content: center; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
@@ -77,6 +78,11 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .finalist-card { background: rgba(0,0,0,0.4); padding: 30px; border-radius: 20px; border: 4px solid transparent; flex: 1; margin: 0 15px; transition: 0.3s; }
 .finalist-card.active-turn { border-color: var(--primary); background: rgba(249, 115, 22, 0.1); box-shadow: 0 0 40px rgba(249, 115, 22, 0.2); transform: scale(1.05); }
 
+/* Estilos Wildcard TV */
+.wildcard-box { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; }
+.wildcard-answer { background: rgba(59, 130, 246, 0.2); border: 2px solid var(--info); padding: 15px 25px; border-radius: 20px; font-size: 1.8rem; font-weight: 900; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.3); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
 .game-input { background: rgba(0,0,0,0.5); border: 2px solid #475569; color: white; padding: 20px; font-size: 1.5rem; text-align: center; border-radius: 16px; width: 100%; margin-bottom: 20px; text-transform: uppercase; font-weight: 900; outline: none; transition: 0.3s; letter-spacing: 2px; }
 
 .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 360px; margin: auto; }
@@ -91,6 +97,11 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .rule-box { background: rgba(0,0,0,0.4); padding: 25px; border-radius: 20px; font-size: 1.4rem; line-height: 1.6; text-align: left; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
 .rule-box ul { padding-left: 20px; margin-bottom: 0; }
 .rule-box li { margin-bottom: 10px; }
+
+.avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; }
+.avatar-item { font-size: 2rem; cursor: pointer; padding: 10px; border-radius: 10px; transition: 0.2s; border: 2px solid transparent; }
+.avatar-item:hover { background: rgba(255,255,255,0.1); }
+.avatar-item.selected { border-color: var(--primary); background: rgba(249, 115, 22, 0.2); transform: scale(1.1); }
 
 #countdown-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 11, 20, 0.95); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
 #cd-num { animation: pulseCD 1s infinite; text-shadow: 0 0 80px var(--success); }
@@ -112,8 +123,3 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 5px; }
-
-.avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; }
-.avatar-item { font-size: 2rem; cursor: pointer; padding: 10px; border-radius: 10px; transition: 0.2s; border: 2px solid transparent; }
-.avatar-item:hover { background: rgba(255,255,255,0.1); }
-.avatar-item.selected { border-color: var(--primary); background: rgba(249, 115, 22, 0.2); transform: scale(1.1); }
