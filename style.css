@@ -1,23 +1,22 @@
-/* --- HACHA V17.0 | ARCADE CINÉTICO (style.css) --- */
+/* --- HACHA V17.0 | LAVA LAMP EDITION (style.css) --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap');
 
 :root { 
-    /* Colores base para tarjetas e inputs */
-    --surface-light: rgba(255, 255, 255, 0.92);
+    --surface: rgba(255, 255, 255, 0.90); /* Cristal casi blanco para máximo contraste */
     --text-dark: #0f172a;
     --text-muted: #475569;
     
     /* Paleta Pop Arcade */
-    --primary: #ff5e3a;    /* Naranja Neón */
+    --primary: #ff5e3a;    
     --primary-dark: #d84315; 
-    --success: #10b981;    /* Verde Esmeralda Vibrante */
+    --success: #10b981;    
     --success-dark: #047857;
-    --danger: #f43f5e;     /* Rosa Fuerte */
+    --danger: #f43f5e;     
     --danger-dark: #be123c;
-    --info: #3b82f6;       /* Azul Eléctrico */
+    --info: #3b82f6;       
     --info-dark: #1d4ed8;
-    --violet: #8b5cf6;     /* Púrpura */
+    --violet: #8b5cf6;     
     --violet-dark: #6d28d9;
 }
 
@@ -31,39 +30,80 @@ body {
     flex-direction: column; 
     min-height: 100vh; 
     overflow: hidden; 
-    
-    /* EL FONDO LÍQUIDO */
-    background: linear-gradient(-45deg, #4f46e5, #d946ef, #f97316, #3b82f6);
-    background-size: 400% 400%;
-    animation: gradientFlow 15s ease infinite;
+    background-color: #020617; /* El vacío más oscuro */
 }
-@keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-/* EL PATRÓN EN MOVIMIENTO (Ruido Cinético) */
-body::before {
-    content: ""; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-    background-image: radial-gradient(rgba(255,255,255,0.2) 3px, transparent 3px);
-    background-size: 40px 40px;
-    transform: rotate(-20deg);
-    animation: movePattern 40s linear infinite;
+/* --- MOTOR LAVA LAMP CINEMÁTICO --- */
+.lava-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
     z-index: -1;
-    pointer-events: none;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
+    filter: blur(25px); /* Convierte los gradientes duros en plasma líquido */
 }
-@keyframes movePattern { 0% { transform: translateY(0) translateX(0) rotate(-20deg); } 100% { transform: translateY(-100px) translateX(-100px) rotate(-20deg); } }
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    animation: morphBlob 12s ease-in-out infinite, floatLava 20s ease-in-out infinite alternate;
+    opacity: 0.85;
+}
+
+/* Orbes basados en tu imagen de referencia */
+.b1 { 
+    width: 45vw; height: 45vw; top: -10%; left: -10%; 
+    animation-delay: 0s, 0s; 
+    background: linear-gradient(135deg, #ea580c, #facc15); 
+}
+.b2 { 
+    width: 35vw; height: 35vw; bottom: -10%; right: -5%; 
+    animation-delay: -2s, -5s; 
+    background: linear-gradient(135deg, #dc2626, #ea580c); 
+}
+.b3 { 
+    width: 25vw; height: 25vw; top: 40%; left: 60%; 
+    animation-delay: -4s, -10s; 
+    background: linear-gradient(135deg, #f97316, #fbbf24); 
+}
+/* El aura azul de fondo */
+.b4 { 
+    width: 60vw; height: 60vw; top: 15%; right: 30%; 
+    animation-delay: -6s, -15s; 
+    background: linear-gradient(135deg, #2563eb, #3b82f6); 
+    opacity: 0.4; 
+    mix-blend-mode: screen; 
+} 
+
+/* Morfología para simular líquido */
+@keyframes morphBlob {
+    0% { border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%; }
+    34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+    67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+    100% { border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%; }
+}
+/* Flotabilidad lenta y pesada */
+@keyframes floatLava {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    50% { transform: translate(10vw, 15vh) rotate(180deg) scale(1.1); }
+    100% { transform: translate(-5vw, 20vh) rotate(360deg) scale(0.95); }
+}
+/* ---------------------------------- */
 
 .screen { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 20px; text-align: center; width: 100%; height: 100vh; position: absolute; top:0; left:0; overflow-y: auto; }
 .active { display: flex; z-index: 10; animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes bounceIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-/* TARJETAS DE LUZ (Glassmorphism Invertido) */
+/* TARJETAS DE CRISTAL ESMERILADO (Invertidas a Blanco) */
 .card { 
-    background: var(--surface-light); 
+    background: var(--surface); 
     padding: 3rem; 
     border-radius: 32px; 
-    box-shadow: 0 25px 60px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,1); 
-    border: 3px solid rgba(255,255,255,0.8);
-    backdrop-filter: blur(15px); 
-    -webkit-backdrop-filter: blur(15px); 
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,1); 
+    border: 3px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px); 
     max-width: 1050px; 
     width: 95%; 
     position: relative; 
@@ -76,17 +116,17 @@ body::before {
     background: rgba(255, 240, 245, 0.95); 
 }
 
-/* EL LOGO: Ahora respira sobre blanco */
-.main-logo { max-width: 400px; width: 100%; height: auto; margin: 0 auto 40px auto; display: block; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.15)); transition: transform 0.3s; }
+/* EL LOGO */
+.main-logo { max-width: 400px; width: 100%; height: auto; margin: 0 auto 40px auto; display: block; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); transition: transform 0.3s; }
 .main-logo:hover { transform: scale(1.05) rotate(-2deg); }
 
 .mobile-logo { max-width: 250px; width: 100%; margin: 0 auto 40px auto; display: block; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); background: rgba(255,255,255,0.9); padding: 15px; border-radius: 20px; }
 
-/* TIPOGRAFÍA OSCURA PARA MÁXIMO CONTRASTE */
+/* TIPOGRAFÍA OSCURA */
 h1 { font-size: 4.8rem; margin: 0 0 1rem 0; letter-spacing: -2px; text-transform: uppercase; font-weight: 900; color: var(--text-dark); text-shadow: 0 4px 0 rgba(0,0,0,0.05); }
 h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight: 900; letter-spacing: 1px; }
 
-/* BOTONES CHUNKIES ARCADE */
+/* BOTONES ARCADE */
 .btn { 
     background: var(--primary); color: #fff; border: none; padding: 22px 40px; 
     font-size: 1.5rem; font-weight: 900; border-radius: 24px; cursor: pointer; 
@@ -99,10 +139,7 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .btn:disabled { background: #94a3b8; box-shadow: 0 8px 0 #64748b; opacity: 0.6; cursor: not-allowed; top: 0; color: #f8fafc; }
 .btn:hover:not(:disabled) { filter: brightness(1.1); transform: scale(1.02); }
 
-/* EL LATIDO: Animación para botones de acción principal */
-#btn-host-start, .btn.green[onclick="app.startRound1Intro()"] {
-    animation: heartbeat 2s infinite;
-}
+#btn-host-start, .btn.green[onclick="app.startRound1Intro()"] { animation: heartbeat 2s infinite; }
 @keyframes heartbeat {
     0% { transform: scale(1); box-shadow: 0 10px 0 var(--primary-dark), 0 15px 25px rgba(0,0,0,0.3); }
     15% { transform: scale(1.06); box-shadow: 0 10px 0 var(--primary-dark), 0 25px 40px rgba(255, 94, 58, 0.5); }
@@ -171,7 +208,7 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .wildcard-answer { background: var(--info); border: none; padding: 18px 30px; border-radius: 20px; font-size: 1.8rem; font-weight: 900; color: white; box-shadow: 0 10px 0 var(--info-dark), 0 15px 20px rgba(0,0,0,0.2); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes popIn { from { transform: scale(0); opacity: 0; } 70% { transform: scale(1.1); } to { transform: scale(1); opacity: 1; } }
 
-/* MÓVIL Y CAJAS DE TEXTO (Alta visibilidad) */
+/* MÓVIL Y CAJAS DE TEXTO */
 .game-input { background: white; border: 4px solid #cbd5e1; color: var(--text-dark); padding: 25px; font-size: 1.8rem; text-align: center; border-radius: 24px; width: 100%; margin-bottom: 25px; text-transform: uppercase; font-weight: 900; outline: none; transition: 0.3s; letter-spacing: 2px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.05); }
 .game-input:focus { border-color: var(--info); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); }
 
@@ -183,7 +220,7 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .calc-btn.clear { background: var(--danger); color: white; box-shadow: 0 8px 0 var(--danger-dark); }
 .calc-btn.clear:active { box-shadow: 0 2px 0 var(--danger-dark); }
 
-/* BUZZER MÓVIL: Gigante y adictivo */
+/* BUZZER MÓVIL */
 .buzzer-btn { width: 340px; height: 340px; border-radius: 50%; background: var(--danger); border: 15px solid rgba(255,255,255,0.2); color: white; font-size: 5rem; font-weight: 900; box-shadow: 0 30px 0 var(--danger-dark), 0 40px 30px rgba(0,0,0,0.5), inset 0 10px 20px rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: 0.1s; letter-spacing: 3px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 .buzzer-btn:active:not(.disabled) { transform: translateY(25px); box-shadow: 0 5px 0 var(--danger-dark), 0 10px 10px rgba(0,0,0,0.5), inset 0 5px 10px rgba(255,255,255,0.2); }
 .buzzer-btn.disabled { background: #94a3b8 !important; border-color: #cbd5e1 !important; color: #f1f5f9; box-shadow: none !important; transform: translateY(30px); text-shadow: none; pointer-events: none; }
@@ -216,10 +253,10 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .sabotage-btn { font-size: 4rem; background: white; border: none; border-radius: 28px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation; transition: 0.1s; box-shadow: 0 10px 0 #cbd5e1; }
 .sabotage-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 #cbd5e1; }
 
-/* Overrides transparentes para móvil si es necesario */
+/* Transparencias para que la lava se vea en el móvil también */
 #screen-controller .card { background: transparent; box-shadow: none; backdrop-filter: none; border: none; }
 #r2-mobile-data, #msg-box, #r4-mobile-msg { background: rgba(255,255,255,0.9); color: var(--text-dark); border-radius: 24px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
 
 ::-webkit-scrollbar { width: 14px; }
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.4); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
