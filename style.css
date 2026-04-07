@@ -1,4 +1,4 @@
-/* --- HACHA V17.0 | LAVA LAMP EDITION (style.css) --- */
+/* --- HACHA V17.1 | LAVA LAMP EDITION & LOCAL ORBE (style.css) --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap');
 
@@ -51,28 +51,28 @@ body {
     opacity: 0.85;
 }
 
-/* Orbes basados en tu imagen de referencia */
+/* Orbes basados fielmente en tu imagen de referencia original */
 .b1 { 
     width: 45vw; height: 45vw; top: -10%; left: -10%; 
     animation-delay: 0s, 0s; 
-    background: linear-gradient(135deg, #ea580c, #facc15); 
+    background: linear-gradient(135deg, #f97316, #fbbf24); /* Naranja/Amarillo */
 }
 .b2 { 
     width: 35vw; height: 35vw; bottom: -10%; right: -5%; 
     animation-delay: -2s, -5s; 
-    background: linear-gradient(135deg, #dc2626, #ea580c); 
+    background: linear-gradient(135deg, #dc2626, #f97316); /* Rojo/Naranja */
 }
 .b3 { 
     width: 25vw; height: 25vw; top: 40%; left: 60%; 
     animation-delay: -4s, -10s; 
-    background: linear-gradient(135deg, #f97316, #fbbf24); 
+    background: linear-gradient(135deg, #f97316, #facc15); /* Naranja/Amarillo Claro */
 }
-/* El aura azul de fondo */
+/* El aura azul de fondo fidedigna de la imagen */
 .b4 { 
     width: 60vw; height: 60vw; top: 15%; right: 30%; 
     animation-delay: -6s, -15s; 
-    background: linear-gradient(135deg, #2563eb, #3b82f6); 
-    opacity: 0.4; 
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6); /* Azul Eléctrico Profundo */
+    opacity: 0.35; 
     mix-blend-mode: screen; 
 } 
 
@@ -109,6 +109,7 @@ body {
     position: relative; 
     margin: auto; 
     transition: all 0.4s ease; 
+    z-index: 2; /* Por encima del orbe de fondo */
 }
 .card.fire-mode { 
     box-shadow: 0 15px 50px rgba(244, 63, 94, 0.4), inset 0 0 15px rgba(244, 63, 94, 0.2); 
@@ -116,9 +117,38 @@ body {
     background: rgba(255, 240, 245, 0.95); 
 }
 
-/* EL LOGO */
-.main-logo { max-width: 400px; width: 100%; height: auto; margin: 0 auto 40px auto; display: block; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2)); transition: transform 0.3s; }
-.main-logo:hover { transform: scale(1.05) rotate(-2deg); }
+/* --- NUEVO ORBE LOCAL PARA EL LOGO (Uso Funcional) --- */
+.logo-w-plasma-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 40px;
+    z-index: 1; /* El orbe detrás de la tarjeta, pero el contenedor local de más prioridad */
+}
+
+.logo-lava-orbe {
+    position: absolute;
+    top: -50px; left: -100px;
+    width: 120%; height: 120%;
+    min-width: 600px; min-height: 250px;
+    background: linear-gradient(135deg, #f97316, #facc15); /* Naranja Fuego */
+    border-radius: 50%;
+    filter: blur(25px); /* Mismo blur que la lava trasera */
+    opacity: 0.95;
+    z-index: -1; /* Detrás del logo */
+    transform: translate(0, 0); /* No se mueve por la pantalla */
+    animation: morphLogoPlasma 10s ease-in-out infinite; /* Solo cambia de forma orgánicamente */
+}
+
+/* Morfología para el orbe de soporte local */
+@keyframes morphLogoPlasma {
+    0% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+    50% { border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%; }
+    100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+}
+
+.main-logo-w-plasma { max-width: 400px; width: 100%; height: auto; display: block; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.15)); transition: transform 0.3s; }
+.main-logo-w-plasma:hover { transform: scale(1.05) rotate(-2deg); }
+/* ----------------------------------------------------- */
 
 .mobile-logo { max-width: 250px; width: 100%; margin: 0 auto 40px auto; display: block; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); background: rgba(255,255,255,0.9); padding: 15px; border-radius: 20px; }
 
@@ -208,7 +238,7 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .wildcard-answer { background: var(--info); border: none; padding: 18px 30px; border-radius: 20px; font-size: 1.8rem; font-weight: 900; color: white; box-shadow: 0 10px 0 var(--info-dark), 0 15px 20px rgba(0,0,0,0.2); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 @keyframes popIn { from { transform: scale(0); opacity: 0; } 70% { transform: scale(1.1); } to { transform: scale(1); opacity: 1; } }
 
-/* MÓVIL Y CAJAS DE TEXTO */
+/* MÓVIL Y CAJAS DE TEXTO (Visibilidad Invertida) */
 .game-input { background: white; border: 4px solid #cbd5e1; color: var(--text-dark); padding: 25px; font-size: 1.8rem; text-align: center; border-radius: 24px; width: 100%; margin-bottom: 25px; text-transform: uppercase; font-weight: 900; outline: none; transition: 0.3s; letter-spacing: 2px; box-shadow: inset 0 5px 10px rgba(0,0,0,0.05); }
 .game-input:focus { border-color: var(--info); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); }
 
@@ -220,7 +250,7 @@ h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; font-weight:
 .calc-btn.clear { background: var(--danger); color: white; box-shadow: 0 8px 0 var(--danger-dark); }
 .calc-btn.clear:active { box-shadow: 0 2px 0 var(--danger-dark); }
 
-/* BUZZER MÓVIL */
+/* BUZZER MÓVIL (Visibilidad Invertida) */
 .buzzer-btn { width: 340px; height: 340px; border-radius: 50%; background: var(--danger); border: 15px solid rgba(255,255,255,0.2); color: white; font-size: 5rem; font-weight: 900; box-shadow: 0 30px 0 var(--danger-dark), 0 40px 30px rgba(0,0,0,0.5), inset 0 10px 20px rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: 0.1s; letter-spacing: 3px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 .buzzer-btn:active:not(.disabled) { transform: translateY(25px); box-shadow: 0 5px 0 var(--danger-dark), 0 10px 10px rgba(0,0,0,0.5), inset 0 5px 10px rgba(255,255,255,0.2); }
 .buzzer-btn.disabled { background: #94a3b8 !important; border-color: #cbd5e1 !important; color: #f1f5f9; box-shadow: none !important; transform: translateY(30px); text-shadow: none; pointer-events: none; }
