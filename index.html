@@ -3,13 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HACHA 🪓 | V15.0 CLEAN ARCHITECTURE</title>
+<title>HACHA 🪓 | V17.0 LAVA LAMP</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <link rel="stylesheet" href="style.css?v=17.0">
 </head>
 <body>
+
+<div class="lava-container">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="blob b4"></div>
+</div>
 
 <div id="countdown-layer"><div id="cd-num" style="font-size: 15rem; font-weight: 900; color: white;">3</div></div>
 
@@ -29,6 +36,7 @@
 
 <div id="screen-home" class="screen active">
     <img src="logo.png" alt="HACHA" class="main-logo" onerror="this.outerHTML='<h1>HACHA 🪓</h1>'">
+    
     <p id="load-status">Cargando...</p>
     <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
         <button id="btn-host-start" class="btn" onclick="app.hostGame()" disabled>Crear Partida</button>
@@ -74,7 +82,7 @@
         </div>
         
         <div id="r1-controls-judging" style="display:none;">
-            <div id="answering-name" style="font-size:3.5rem; font-weight:900; color:white; margin-bottom:20px; text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);">...</div>
+            <div id="answering-name">...</div>
             <button class="btn reveal" id="btn-reveal-judge" onclick="app.confirmReveal()">👁️ DESVELAR RESPUESTA</button>
             <div id="judge-buttons" style="display:none; gap:15px; justify-content:center;">
                 <button class="btn green" onclick="app.judge(true)">✅ ACERTÓ</button>
@@ -202,20 +210,20 @@
         <img src="logo.png" class="mobile-logo" onerror="this.outerHTML='<h1 style=\'font-size:3rem;\'>HACHA 🪓</h1>'">
         <input type="text" id="join-code" class="game-input" placeholder="CÓDIGO SALA" maxlength="4">
         <input type="text" id="join-name" class="game-input" placeholder="TU NOMBRE" maxlength="12">
-        <p style="margin-bottom:10px; font-weight:bold;">ELIGE TU AVATAR:</p>
+        <p style="margin-bottom:10px; font-weight:bold; color: white;">ELIGE TU AVATAR:</p>
         <div id="avatar-selector" class="avatar-grid"></div>
         <button id="btn-join" class="btn" onclick="app.joinGame()">¡ENTRAR!</button>
     </div>
 </div>
 
-<div id="screen-controller" class="screen" style="background:var(--bg-dark); justify-content:flex-start;">
+<div id="screen-controller" class="screen" style="justify-content:flex-start;">
     <div style="position:absolute; top:20px; right:20px; font-size:2.5rem;" id="my-avatar">👤</div>
     <div id="my-score" style="position:absolute; top:25px; left:25px; color:#fff; font-weight:900; font-size:1.5rem; background:rgba(0,0,0,0.5); padding: 5px 15px; border-radius:20px;">0 PTS</div>
     <div id="r3-lives-mobile" style="position:absolute; top:70px; left:25px; color:var(--danger); font-weight:900; font-size: 1.5rem; display:none;"></div>
     
     <div id="ctrl-standard" style="margin-top: 80px;"><div id="msg-box" style="color:white; font-weight:900; text-align:center;">ESPERANDO...</div><button id="buzzer" class="buzzer-btn disabled" onclick="app.buzz()">BUZZ</button></div>
     
-    <div id="ctrl-r2" style="display:none; margin-top: 50px; width: 100%; max-width: 500px;"><div id="r2-mobile-timer" class="timer-big" style="font-size:4.5rem; margin-bottom:5px;">45</div><div id="r2-mobile-data" style="color:white; text-align:center; padding:15px; background:#1e293b; border-radius:15px; margin-bottom:15px;">...</div>
+    <div id="ctrl-r2" style="display:none; margin-top: 50px; width: 100%; max-width: 500px;"><div id="r2-mobile-timer" class="timer-big" style="font-size:4.5rem; margin-bottom:5px;">45</div><div id="r2-mobile-data" style="color:white; text-align:center; padding:15px; background:rgba(0,0,0,0.5); border-radius:15px; margin-bottom:15px;">...</div>
         <div id="r2-tool-lex" style="display:none;"><input type="text" id="r2-lex-input" class="game-input" placeholder="Palabra..."><button class="btn green" id="btn-r2-submit-lex" onclick="app.submitR2Lex()" style="width:100%">ENVIAR</button></div>
         <div id="r2-tool-math" style="display:none;"><input type="text" id="calc-display" class="game-input" disabled placeholder="0"><div class="calc-grid"><button class="calc-btn" onclick="app.c('7')">7</button><button class="calc-btn" onclick="app.c('8')">8</button><button class="calc-btn" onclick="app.c('9')">9</button><button class="calc-btn op" onclick="app.c('/')">/</button><button class="calc-btn" onclick="app.c('4')">4</button><button class="calc-btn" onclick="app.c('5')">5</button><button class="calc-btn" onclick="app.c('6')">6</button><button class="calc-btn op" onclick="app.c('*')">*</button><button class="calc-btn" onclick="app.c('1')">1</button><button class="calc-btn" onclick="app.c('2')">2</button><button class="calc-btn" onclick="app.c('3')">3</button><button class="calc-btn op" onclick="app.c('-')">-</button><button class="calc-btn clear" onclick="app.c('C')">C</button><button class="calc-btn" onclick="app.c('0')">0</button><button class="calc-btn op" onclick="app.c('=')">=</button><button class="calc-btn op" onclick="app.c('+')">+</button></div><button class="btn green" id="btn-r2-submit-math" onclick="app.submitR2Math()" style="width:100%; margin-top:10px;">ENVIAR</button></div>
     </div>
@@ -223,7 +231,7 @@
     <div id="ctrl-spectator" style="display:none; margin-top: 80px;">
         <h2 style="color:var(--danger)">ELIMINADO</h2>
         <div id="spectator-sabotage">
-            <p>Envía sabotajes a la TV:</p>
+            <p style="color:white; font-weight:bold;">Envía sabotajes a la TV:</p>
             <div class="sabotage-grid"><button class="sabotage-btn" onclick="app.sendReaction('💩')">💩</button><button class="sabotage-btn" onclick="app.sendReaction('🍅')">🍅</button><button class="sabotage-btn" onclick="app.sendReaction('👏')">👏</button><button class="sabotage-btn" onclick="app.sendReaction('🥶')">🥶</button></div>
         </div>
         <div id="spectator-wildcard" style="display:none; width:100%; max-width:400px; margin-top:20px;">
@@ -236,7 +244,7 @@
     <div id="ctrl-r4" style="display:none; margin-top: 60px;"><h2 style="color:#facc15">FINAL</h2><div id="r4-mobile-msg" style="color:white; text-align:center; padding:20px; font-weight:bold;">...</div><div id="r4-my-quesitos" class="quesito-container"></div></div>
 </div>
 
-<script src="app.js?v=15.0"></script>
+<script src="app.js?v=17.0"></script>
 
 </body>
 </html>
