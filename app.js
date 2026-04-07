@@ -1,9 +1,22 @@
-// --- HACHA V15.1 | MOTOR DE JUEGO (app.js) ---
+// --- HACHA V15.2 | GLOBAL NETWORKING (app.js) ---
 
 const AVATAR_LIST = ['🦊','🦁','🐷','🐸','🐵','🐲','🦄','👽','🤖','🐼','🐻','🐨','🐯','🐮','🐶'];
 const PLAYER_COLORS = ['#ef4444','#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#f97316'];
 const CAT_COLORS = { "Geografía": "#3b82f6", "Arte y Literatura": "#a16207", "Historia": "#eab308", "Entretenimiento": "#ec4899", "Ciencias y Naturaleza": "#22c55e", "Deportes": "#f97316" };
 const CAT_CLASSES = { "Geografía": "cat-geo", "Arte y Literatura": "cat-art", "Historia": "cat-his", "Entretenimiento": "cat-ent", "Ciencias y Naturaleza": "cat-sci", "Deportes": "cat-spo" };
+
+// RUTINA DE SERVIDORES STUN (ROMPE-CORTAFUEGOS 4G/5G)
+const PEER_OPTIONS = {
+    config: {
+        'iceServers': [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' }
+        ]
+    }
+};
 
 const AudioEngine = {
     ctx: null, init: function() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
@@ -40,7 +53,8 @@ class HachaEngine {
     resumeGame() { const s = JSON.parse(sessionStorage.getItem('hacha_state')); this.roomCode=s.roomCode; this.players=s.players; this.phase=s.phase; this.r4Finalists=s.r4Finalists||[]; this.r3Order=s.r3Order||[]; this.setupHost(); }
 
     setupHost() {
-        this.peer = new Peer(`hacha-room-${this.roomCode}`);
+        // INYECCIÓN DE SERVIDORES STUN AL HOST
+        this.peer = new Peer(`hacha-room-${this.roomCode}`, PEER_OPTIONS);
         this.peer.on('open', () => {
             document.getElementById('display-code').innerText = this.roomCode; this.show(this.phase === 0 ? 'screen-lobby' : 'screen-ranking');
             new QRCode(document.getElementById("qrcode"), { text: `${window.location.origin}${window.location.pathname}?code=${this.roomCode}`, width: 150, height: 150 });
@@ -100,34 +114,18 @@ class HachaEngine {
         this.show('screen-r1-game'); document.getElementById('q-counter').innerText = `Q ${this.r1Idx}/10`;
         document.getElementById('r1-card-element').className = this.r1Idx >= 8 ? 'card fire-mode' : 'card';
         document.getElementById('q-text').innerText = q.q; document.getElementById('q-answer').innerText = q.a; document.getElementById('q-answer').classList.add('blur-mode');
-        
-        document.getElementById('r1-controls-reading').style.display = 'block'; 
-        document.getElementById('r1-controls-judging').style.display = 'none'; 
-        document.getElementById('r1-controls-next').style.display='none';
-        
+        document.getElementById('r1-controls-reading').style.display = 'block'; document.getElementById('r1-controls-judging').style.display = 'none'; document.getElementById('r1-controls-next').style.display='none';
         this.buzzerLocked = true; this.broadcast({ type: 'status', msg: 'ESCUCHA...', locked: true });
     }
     startCountdown() { document.getElementById('r1-controls-reading').style.display='none'; let c=3; this.showOverlay(c); this.broadcast({type:'countdown', val:c}); AudioEngine.tick(); const t=setInterval(()=>{ c--; if(c>0){this.showOverlay(c); this.broadcast({type:'countdown', val:c}); AudioEngine.tick();} else {clearInterval(t); this.showOverlay("YA!"); this.broadcast({type:'countdown', val:"YA!"}); setTimeout(()=>{this.hideOverlay(); this.unlockBuzzers();}, 800); } }, 1000); }
     unlockBuzzers() { this.buzzerLocked=false; this.broadcast({type:'status', msg:'¡PULSA!', color:'red', locked:false}); if(this.r1Timeout) clearTimeout(this.r1Timeout); this.r1Timeout=setTimeout(()=>{ if(!this.buzzerLocked){ const ids=Object.keys(this.players); if(ids.length>0){ const v=ids[Math.floor(Math.random()*ids.length)]; this.showOverlay("¡TIEMPO!"); AudioEngine.wrong(); setTimeout(()=>{this.hideOverlay(); this.handleBuzz(v);}, 1500); } } }, 15000); }
-    
     handleBuzz(id) { 
         if(this.buzzerLocked) return; this.buzzerLocked=true; this.currentAnswererId=id; if(this.r1Timeout) clearTimeout(this.r1Timeout); AudioEngine.buzz(); 
-        
-        document.getElementById('r1-controls-judging').style.display='block'; 
-        document.getElementById('btn-reveal-judge').style.display='block';
-        document.getElementById('judge-buttons').style.display='none';
-        
-        const p=this.players[id]; 
-        document.getElementById('answering-name').innerHTML=`<span style="font-size:2rem">${p.avatar}</span> <span style="color:${p.color}">${p.name}</span>`; 
+        document.getElementById('r1-controls-judging').style.display='block'; document.getElementById('btn-reveal-judge').style.display='block'; document.getElementById('judge-buttons').style.display='none';
+        const p=this.players[id]; document.getElementById('answering-name').innerHTML=`<span style="font-size:2rem">${p.avatar}</span> <span style="color:${p.color}">${p.name}</span>`; 
         Object.values(this.connections).forEach(c => { if(c.peer===id) c.send({type:'status', msg:'¡TU TURNO!', color:'orange', locked:true}); else c.send({type:'status', msg:`${p.name} RESPONDE`, color:'grey', locked:true}); }); 
     }
-    
-    confirmReveal() {
-        document.getElementById('q-answer').classList.remove('blur-mode'); 
-        document.getElementById('btn-reveal-judge').style.display='none'; 
-        document.getElementById('judge-buttons').style.display='flex'; 
-    }
-
+    confirmReveal() { document.getElementById('q-answer').classList.remove('blur-mode'); document.getElementById('btn-reveal-judge').style.display='none'; document.getElementById('judge-buttons').style.display='flex'; }
     judge(ok) { const p=this.players[this.currentAnswererId]; const pts=(this.r1Idx>=8)?2:1; if(ok){p.score+=pts; AudioEngine.correct();} else {p.score-=pts; AudioEngine.wrong();} this.updateScoreboard(); this.sync(); this.finishQ(); }
     finishQ() { document.getElementById('q-answer').classList.remove('blur-mode'); document.getElementById('r1-controls-judging').style.display='none'; document.getElementById('r1-controls-next').style.display='block'; this.broadcast({type:'status', msg:'ESPERA...', locked:true}); }
     toggleAnswer() { document.getElementById('q-answer').classList.toggle('blur-mode'); }
@@ -149,11 +147,8 @@ class HachaEngine {
     nextR3Question() { 
         const vivos = Object.values(this.players).filter(p => !p.eliminated); 
         if (vivos.length <= 2) { 
-            // CORRECCIÓN V15.1: Solo preparamos finalistas pero NO saltamos a phase 4 aún
             this.r4Finalists = vivos.map(p => p.id); 
-            this.sync(); 
-            this.showRanking(); 
-            return; 
+            this.sync(); this.showRanking(); return; 
         } 
         while(this.players[this.r3Order[this.r3TurnIdx]].eliminated) { this.r3TurnIdx = (this.r3TurnIdx + 1) % this.r3Order.length; } 
         const activeId = this.r3Order[this.r3TurnIdx]; this.currentAnswererId = activeId; const p = this.players[activeId]; const q = this.getSafeQuestion(3, 2); 
@@ -164,14 +159,8 @@ class HachaEngine {
     toggleAnswerR3() { document.getElementById('r3-q-answer').classList.toggle('blur-mode'); }
     
     confirmRevealR3() { 
-        this.buzzerLocked = false; 
-        document.getElementById('r3-controls-reading').style.display='none'; 
-        
-        // RESPUESTA OCULTA, APARECE DESVELAR
-        document.getElementById('r3-controls-judging').style.display='block'; 
-        document.getElementById('btn-reveal-judge-r3').style.display='block';
-        document.getElementById('r3-judge-buttons').style.display='none';
-        
+        this.buzzerLocked = false; document.getElementById('r3-controls-reading').style.display='none'; 
+        document.getElementById('r3-controls-judging').style.display='block'; document.getElementById('btn-reveal-judge-r3').style.display='block'; document.getElementById('r3-judge-buttons').style.display='none';
         this.connections[this.currentAnswererId].send({ type: 'status', msg: '¡RESPONDE!', color: 'red', locked: false }); 
     }
 
@@ -186,7 +175,7 @@ class HachaEngine {
 
     // R4
     startRound4Intro() { 
-        this.phase = 4; // CORRECCIÓN V15.1: Declaramos la Fase 4 al entrar
+        this.phase = 4;
         this.r4Finalists.forEach(id => { if(this.players[id]) this.players[id].wildcards = 1; }); 
         this.r4TurnIdx = 0; this.broadcast({ type: 'phase', phase: 4 }); this.sync(); this.show('screen-r4-intro'); 
     }
@@ -202,7 +191,6 @@ class HachaEngine {
         document.getElementById('btn-r4-timer').style.display = 'none'; 
         document.getElementById('r4-timer-display').style.display = 'block'; 
         
-        // RESPUESTA OCULTA, APARECE DESVELAR EN R4
         document.getElementById('r4-controls-judge').style.display = 'block'; 
         document.getElementById('btn-r4-reveal').style.display = 'block';
         document.getElementById('r4-judge-buttons').style.display = 'none';
@@ -242,7 +230,24 @@ class HachaEngine {
     broadcastR4WildcardState() { const activeName = this.players[this.r4Finalists[this.r4TurnIdx]].name; Object.values(this.connections).forEach(c => { const p = this.players[c.peer]; const isFinalist = this.r4Finalists.includes(c.peer); const isMyTurn = c.peer === this.r4Finalists[this.r4TurnIdx]; c.send({ type: 'r4-wildcard-trigger', isFinalist: isFinalist, isMyTurn: isMyTurn, name: activeName, myQuesitos: p.quesitos || [] }); }); }
 
     // --- CLIENTE ---
-    joinGame() { AudioEngine.init(); const c = document.getElementById('join-code').value.toUpperCase().trim(); const n = document.getElementById('join-name').value.toUpperCase().trim(); if(!c || !n || !this.selectedAvatar) return alert("Falta código, nombre o avatar."); document.getElementById('btn-join').innerText = "CONECTANDO..."; document.getElementById('btn-join').disabled = true; this.peer = new Peer(); this.peer.on('open', () => { const conn = this.peer.connect(`hacha-room-${c}`, { reliable: true }); const timeoutId = setTimeout(() => { if(!this.conn) { alert("❌ La sala no existe."); document.getElementById('btn-join').innerText = "¡ENTRAR!"; document.getElementById('btn-join').disabled = false; } }, 5000); conn.on('open', () => { clearTimeout(timeoutId); this.conn = conn; conn.send({type:'join', name:n, avatar:this.selectedAvatar}); this.show('screen-controller'); }); conn.on('data', d => this.handleClientData(d)); conn.on('error', () => { alert("Error de red."); }); }); }
+    joinGame() {
+        AudioEngine.init(); const c = document.getElementById('join-code').value.toUpperCase().trim(); const n = document.getElementById('join-name').value.toUpperCase().trim(); 
+        if(!c || !n || !this.selectedAvatar) return alert("Falta código, nombre o avatar."); 
+        
+        document.getElementById('btn-join').innerText = "CONECTANDO..."; document.getElementById('btn-join').disabled = true; 
+        
+        // INYECCIÓN DE SERVIDORES STUN AL CLIENTE (MOVIL)
+        this.peer = new Peer(PEER_OPTIONS); 
+        
+        this.peer.on('open', () => { 
+            const conn = this.peer.connect(`hacha-room-${c}`, { reliable: true }); 
+            const timeoutId = setTimeout(() => { if(!this.conn) { alert("❌ La sala no existe."); document.getElementById('btn-join').innerText = "¡ENTRAR!"; document.getElementById('btn-join').disabled = false; } }, 5000); 
+            conn.on('open', () => { clearTimeout(timeoutId); this.conn = conn; conn.send({type:'join', name:n, avatar:this.selectedAvatar}); this.show('screen-controller'); }); 
+            conn.on('data', d => this.handleClientData(d)); 
+            conn.on('error', () => { alert("Error de red."); }); 
+        }); 
+    }
+    
     handleClientData(d) {
         if(d.type==='joined_ok') { document.getElementById('my-avatar').innerText = d.avatar; document.getElementById('buzzer').style.background = `radial-gradient(circle at 30% 30%, ${d.color}, #000)`; }
         if(d.type==='phase'){ document.getElementById('ctrl-standard').style.display=d.phase!==2&&d.phase!==4?'block':'none'; document.getElementById('ctrl-r2').style.display=d.phase===2?'block':'none'; document.getElementById('ctrl-r4').style.display=d.phase===4?'block':'none'; if(d.phase===3) document.getElementById('r3-lives-mobile').style.display='block'; }
