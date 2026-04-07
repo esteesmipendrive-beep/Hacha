@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HACHA 🪓 | V17.0 LAVA LAMP</title>
+<title>HACHA 🪓 | V17.1 LAVA LOGO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link rel="stylesheet" href="style.css?v=17.0">
+<link rel="stylesheet" href="style.css?v=17.1">
 </head>
 <body>
 
@@ -35,10 +35,13 @@
 </div>
 
 <div id="screen-home" class="screen active">
-    <img src="logo.png" alt="HACHA" class="main-logo" onerror="this.outerHTML='<h1>HACHA 🪓</h1>'">
+    <div class="logo-w-plasma-container">
+        <div class="logo-lava-orbe"></div>
+        <img src="logo.png" alt="HACHA" class="main-logo-w-plasma" onerror="this.outerHTML='<h1>HACHA 🪓</h1>'">
+    </div>
     
-    <p id="load-status">Cargando...</p>
-    <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+    <p id="load-status" style="color: white; font-weight: bold; position: relative; z-index: 1;">Cargando...</p>
+    <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; position: relative; z-index: 1;">
         <button id="btn-host-start" class="btn" onclick="app.hostGame()" disabled>Crear Partida</button>
         <button id="btn-host-resume" class="btn blue" onclick="app.resumeGame()" style="display:none;">Reanudar</button>
     </div>
@@ -244,7 +247,7 @@
     <div id="ctrl-r4" style="display:none; margin-top: 60px;"><h2 style="color:#facc15">FINAL</h2><div id="r4-mobile-msg" style="color:white; text-align:center; padding:20px; font-weight:bold;">...</div><div id="r4-my-quesitos" class="quesito-container"></div></div>
 </div>
 
-<script src="app.js?v=17.0"></script>
+<script src="app.js?v=17.1"></script>
 
 </body>
 </html>
